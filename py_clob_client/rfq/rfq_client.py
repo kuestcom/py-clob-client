@@ -1,5 +1,5 @@
 """
-RFQ (Request for Quote) client for the Polymarket CLOB API.
+RFQ (Request for Quote) client for the Kuest CLOB API.
 
 This module provides the RfqClient class which handles all RFQ operations
 including creating requests, quotes, and executing trades.
@@ -676,4 +676,3 @@ class RfqClient:
             }
         else:
             raise Exception(f"invalid match type: {raw_match_type}")
-

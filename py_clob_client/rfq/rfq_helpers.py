@@ -1,5 +1,5 @@
 """
-RFQ helper functions for the Polymarket CLOB API.
+RFQ helper functions for the Kuest CLOB API.
 
 This module provides utility functions for RFQ operations including
 query parameter parsing and unit conversion.

@@ -44,7 +44,7 @@ class OrderBuilder:
         self.sig_type = sig_type if sig_type is not None else EOA
 
         # Address which holds funds to be used.
-        # Used for Polymarket proxy wallets and other smart contract wallets
+        # Used for Kuest proxy wallets and other smart contract wallets
         # Defaults to the address of the signer
         self.funder = funder if funder is not None else self.signer.address()
 

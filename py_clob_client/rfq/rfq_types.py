@@ -1,5 +1,5 @@
 """
-RFQ (Request for Quote) data types for the Polymarket CLOB API.
+RFQ (Request for Quote) data types for the Kuest CLOB API.
 
 This module defines all input and response types used by the RFQ client.
 """
@@ -82,7 +82,7 @@ class CreateRfqRequestParams:
     """Amount being paid (in smallest units, as string)."""
 
     user_type: int
-    """Signature type (0=EOA, 1=POLY_PROXY, 2=POLY_GNOSIS_SAFE)."""
+    """Signature type (0=EOA, 1=FACTORY_PROXY_WALLET, 2=GNOSIS_SAFE_WALLET, 3=EIP_1271_WALLET)."""
 
 
 @dataclass

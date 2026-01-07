@@ -14,7 +14,7 @@ from py_clob_client.signer import Signer
 from py_clob_client.order_builder.builder import OrderBuilder, ROUNDING_CONFIG
 from py_clob_client.order_builder.helpers import decimal_places, round_normal
 from py_order_utils.model import (
-    POLY_GNOSIS_SAFE,
+    POLY_GNOSIS_SAFE as GNOSIS_SAFE_WALLET,
     EOA,
     BUY as UtilsBuy,
     SELL as UtilsSell,
@@ -1079,7 +1079,7 @@ class TestOrderBuilder(TestCase):
         )
 
     def test_create_order_sell_0_1(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -1138,7 +1138,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order.order["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order.signature)
         self.assertEqual(
@@ -1148,7 +1148,7 @@ class TestOrderBuilder(TestCase):
         )
 
     def test_create_order_sell_0_01(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -1207,7 +1207,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order.order["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order.signature)
         self.assertEqual(
@@ -1217,7 +1217,7 @@ class TestOrderBuilder(TestCase):
         )
 
     def test_create_order_sell_0_001(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -1276,7 +1276,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order.order["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order.signature)
         self.assertEqual(
@@ -1286,7 +1286,7 @@ class TestOrderBuilder(TestCase):
         )
 
     def test_create_order_sell_0_0001(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -1345,7 +1345,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order.order["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order.signature)
         self.assertEqual(
@@ -1808,7 +1808,7 @@ class TestOrderBuilder(TestCase):
         )
 
     def test_create_order_sell_0_1_neg_risk(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -1867,7 +1867,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order.order["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order.signature)
         self.assertEqual(
@@ -1877,7 +1877,7 @@ class TestOrderBuilder(TestCase):
         )
 
     def test_create_order_sell_0_01_neg_risk(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -1936,7 +1936,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order.order["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order.signature)
         self.assertEqual(
@@ -1946,7 +1946,7 @@ class TestOrderBuilder(TestCase):
         )
 
     def test_create_order_sell_0_001_neg_risk(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -2005,7 +2005,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order.order["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order.signature)
         self.assertEqual(
@@ -2015,7 +2015,7 @@ class TestOrderBuilder(TestCase):
         )
 
     def test_create_order_sell_0_0001_neg_risk(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -2074,7 +2074,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order.order["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order.signature)
         self.assertEqual(
@@ -2152,7 +2152,7 @@ class TestOrderBuilder(TestCase):
         self.assertIsNotNone(signed_order_dict["signature"])
 
     def test_dict_order_sell_neg_risk(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -2215,7 +2215,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order_dict["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order_dict["signature"])
 
@@ -2288,7 +2288,7 @@ class TestOrderBuilder(TestCase):
         self.assertIsNotNone(signed_order_dict["signature"])
 
     def test_dict_order_sell(self):
-        builder = OrderBuilder(signer, sig_type=POLY_GNOSIS_SAFE)
+        builder = OrderBuilder(signer, sig_type=GNOSIS_SAFE_WALLET)
 
         signed_order = builder.create_order(
             order_args=OrderArgs(
@@ -2351,7 +2351,7 @@ class TestOrderBuilder(TestCase):
         )
         self.assertEqual(
             signed_order_dict["signatureType"],
-            POLY_GNOSIS_SAFE,
+            GNOSIS_SAFE_WALLET,
         )
         self.assertIsNotNone(signed_order_dict["signature"])
 

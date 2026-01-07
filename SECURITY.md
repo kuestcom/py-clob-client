@@ -1,6 +1,6 @@
 ### Security
 
-If you believe you’ve found a security vulnerability, please email security@polymarket.com. Do not open a public issue.
+If you believe you’ve found a security vulnerability, please email security@kuest.com. Do not open a public issue.
 
 Include:
 - A description of the issue and potential impact
@@ -8,5 +8,4 @@ Include:
 - Any relevant logs or environment details
 
 We will acknowledge receipt, investigate, and provide guidance on next steps.
-
 

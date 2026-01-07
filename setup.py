@@ -6,14 +6,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="py_clob_client",
     version="0.34.4",
-    author="Polymarket Engineering",
-    author_email="engineering@polymarket.com",
-    maintainer="Polymarket Engineering",
-    maintainer_email="engineering@polymarket.com",
-    description="Python client for the Polymarket CLOB",
+    author="Kuest Engineering",
+    author_email="engineering@kuest.com",
+    maintainer="Kuest Engineering",
+    maintainer_email="engineering@kuest.com",
+    description="Python client for the Kuest CLOB",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Polymarket/py-clob-client",
+    url="https://github.com/kuestcom/py-clob-client",
     install_requires=[
         "eth-account>=0.13.0",
         "eth-utils>=4.1.1",
@@ -24,7 +24,7 @@ setuptools.setup(
         "httpx[http2]>=0.27.0",
     ],
     project_urls={
-        "Bug Tracker": "https://github.com/Polymarket/py-clob-client/issues",
+        "Bug Tracker": "https://github.com/kuestcom/py-clob-client/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
