@@ -10,7 +10,7 @@ load_dotenv()
 
 
 def main():
-    host = os.getenv("CLOB_API_URL", "https://clob.polymarket.com")
+    host = os.getenv("CLOB_API_URL", "https://clob.kuest.com")
     key = os.getenv("PK")
     creds = ApiCreds(
         api_key=os.getenv("CLOB_API_KEY"),

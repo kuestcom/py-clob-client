@@ -6,7 +6,7 @@ load_dotenv()
 
 
 def main():
-    host = os.getenv("CLOB_API_URL", "https://clob.polymarket.com")
+    host = os.getenv("CLOB_API_URL", "https://clob.kuest.com")
     client = ClobClient(host)
 
     orderbook = client.get_order_book(

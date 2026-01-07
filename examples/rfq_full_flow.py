@@ -72,7 +72,7 @@ def main():
     # ============================================
     # Setup: Initialize both requester and quoter clients
     # ============================================
-    host = os.getenv("CLOB_API_URL", "https://clob-staging.polymarket.com/")
+    host = os.getenv("CLOB_API_URL", "https://clob.kuest.com")
     chain_id = int(os.getenv("CHAIN_ID", AMOY))
 
     # Requester (creates the request and accepts the quote)

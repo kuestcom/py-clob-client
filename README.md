@@ -29,12 +29,18 @@ The examples below are short and copy‑pasteable.
 ```python
 from py_clob_client.client import ClobClient
 
-client = ClobClient("https://clob.polymarket.com")  # Level 0 (no auth)
+client = ClobClient("https://clob.kuest.com")  # Level 0 (no auth)
 
 ok = client.get_ok()
 time = client.get_server_time()
 print(ok, time)
 ```
+
+### WebSocket
+
+Use the WebSocket gateway for live market or user updates:
+
+`wss://ws-subscriptions-clob.kuest.com/ws/{market|user}`
 
 ### Start trading (EOA)
 
@@ -43,7 +49,7 @@ print(ok, time)
 ```python
 from py_clob_client.client import ClobClient
 
-HOST = "https://clob.polymarket.com"
+HOST = "https://clob.kuest.com"
 CHAIN_ID = 137
 PRIVATE_KEY = "<your-private-key>"
 FUNDER = "<your-funder-address>"
@@ -74,7 +80,7 @@ The **signature_type** parameter tells the system how to verify your signatures:
 ```python
 from py_clob_client.client import ClobClient
 
-HOST = "https://clob.polymarket.com"
+HOST = "https://clob.kuest.com"
 CHAIN_ID = 137
 PRIVATE_KEY = "<your-private-key>"
 PROXY_FUNDER = "<your-proxy-or-smart-wallet-address>"  # Address that holds your funds
@@ -95,7 +101,7 @@ client.set_api_creds(client.create_or_derive_api_creds())
 from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import BookParams
 
-client = ClobClient("https://clob.polymarket.com")  # read-only
+client = ClobClient("https://clob.kuest.com")  # read-only
 
 token_id = "<token-id>"  # Get a token ID: https://docs.polymarket.com/developers/gamma-markets-api/get-markets
 
@@ -115,7 +121,7 @@ from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import MarketOrderArgs, OrderType
 from py_clob_client.order_builder.constants import BUY
 
-HOST = "https://clob.polymarket.com"
+HOST = "https://clob.kuest.com"
 CHAIN_ID = 137
 PRIVATE_KEY = "<your-private-key>"
 FUNDER = "<your-funder-address>"
@@ -144,7 +150,7 @@ from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import OrderArgs, OrderType
 from py_clob_client.order_builder.constants import BUY
 
-HOST = "https://clob.polymarket.com"
+HOST = "https://clob.kuest.com"
 CHAIN_ID = 137
 PRIVATE_KEY = "<your-private-key>"
 FUNDER = "<your-funder-address>"
@@ -172,7 +178,7 @@ print(resp)
 from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import OpenOrderParams
 
-HOST = "https://clob.polymarket.com"
+HOST = "https://clob.kuest.com"
 CHAIN_ID = 137
 PRIVATE_KEY = "<your-private-key>"
 FUNDER = "<your-funder-address>"
@@ -200,7 +206,7 @@ client.cancel_all()
 ```python
 from py_clob_client.client import ClobClient
 
-client = ClobClient("https://clob.polymarket.com")
+client = ClobClient("https://clob.kuest.com")
 markets = client.get_simplified_markets()
 print(markets["data"][:1])
 ```
@@ -212,7 +218,7 @@ print(markets["data"][:1])
 ```python
 from py_clob_client.client import ClobClient
 
-HOST = "https://clob.polymarket.com"
+HOST = "https://clob.kuest.com"
 CHAIN_ID = 137
 PRIVATE_KEY = "<your-private-key>"
 FUNDER = "<your-funder-address>"

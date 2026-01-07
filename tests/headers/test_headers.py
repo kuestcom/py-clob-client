@@ -3,12 +3,12 @@ from unittest import TestCase
 from py_clob_client.clob_types import ApiCreds, RequestArgs
 from py_clob_client.constants import AMOY
 from py_clob_client.headers.headers import (
-    POLY_ADDRESS,
-    POLY_API_KEY,
-    POLY_NONCE,
-    POLY_PASSPHRASE,
-    POLY_SIGNATURE,
-    POLY_TIMESTAMP,
+    KUEST_ADDRESS,
+    KUEST_API_KEY,
+    KUEST_NONCE,
+    KUEST_PASSPHRASE,
+    KUEST_SIGNATURE,
+    KUEST_TIMESTAMP,
     create_level_1_headers,
     create_level_2_headers,
 )
@@ -31,24 +31,24 @@ class TestHeaders(TestCase):
         # no nonce
         l1_headers = create_level_1_headers(signer)
         self.assertIsNotNone(l1_headers)
-        self.assertEqual(l1_headers[POLY_ADDRESS], signer.address())
-        self.assertIsNotNone(l1_headers[POLY_SIGNATURE])
-        self.assertIsNotNone(l1_headers[POLY_TIMESTAMP])
+        self.assertEqual(l1_headers[KUEST_ADDRESS], signer.address())
+        self.assertIsNotNone(l1_headers[KUEST_SIGNATURE])
+        self.assertIsNotNone(l1_headers[KUEST_TIMESTAMP])
         self.assertTrue(
-            int(l1_headers[POLY_TIMESTAMP]) <= int(datetime.now().timestamp())
+            int(l1_headers[KUEST_TIMESTAMP]) <= int(datetime.now().timestamp())
         )
-        self.assertEqual(l1_headers[POLY_NONCE], "0")
+        self.assertEqual(l1_headers[KUEST_NONCE], "0")
 
         # nonce
         l1_headers = create_level_1_headers(signer, nonce=1012)
         self.assertIsNotNone(l1_headers)
-        self.assertEqual(l1_headers[POLY_ADDRESS], signer.address())
-        self.assertIsNotNone(l1_headers[POLY_SIGNATURE])
-        self.assertIsNotNone(l1_headers[POLY_TIMESTAMP])
+        self.assertEqual(l1_headers[KUEST_ADDRESS], signer.address())
+        self.assertIsNotNone(l1_headers[KUEST_SIGNATURE])
+        self.assertIsNotNone(l1_headers[KUEST_TIMESTAMP])
         self.assertTrue(
-            int(l1_headers[POLY_TIMESTAMP]) <= int(datetime.now().timestamp())
+            int(l1_headers[KUEST_TIMESTAMP]) <= int(datetime.now().timestamp())
         )
-        self.assertEqual(l1_headers[POLY_NONCE], "1012")
+        self.assertEqual(l1_headers[KUEST_NONCE], "1012")
 
     def test_create_level_2_headers(self):
         # no body
@@ -56,14 +56,14 @@ class TestHeaders(TestCase):
             signer, creds, request_args=RequestArgs(method="get", request_path="/order")
         )
         self.assertIsNotNone(l2_headers)
-        self.assertEqual(l2_headers[POLY_ADDRESS], signer.address())
-        self.assertIsNotNone(l2_headers[POLY_SIGNATURE])
-        self.assertIsNotNone(l2_headers[POLY_TIMESTAMP])
+        self.assertEqual(l2_headers[KUEST_ADDRESS], signer.address())
+        self.assertIsNotNone(l2_headers[KUEST_SIGNATURE])
+        self.assertIsNotNone(l2_headers[KUEST_TIMESTAMP])
         self.assertTrue(
-            int(l2_headers[POLY_TIMESTAMP]) <= int(datetime.now().timestamp())
+            int(l2_headers[KUEST_TIMESTAMP]) <= int(datetime.now().timestamp())
         )
-        self.assertEqual(l2_headers[POLY_API_KEY], creds.api_key)
-        self.assertEqual(l2_headers[POLY_PASSPHRASE], creds.api_passphrase)
+        self.assertEqual(l2_headers[KUEST_API_KEY], creds.api_key)
+        self.assertEqual(l2_headers[KUEST_PASSPHRASE], creds.api_passphrase)
 
         # body
         l2_headers = create_level_2_headers(
@@ -74,11 +74,11 @@ class TestHeaders(TestCase):
             ),
         )
         self.assertIsNotNone(l2_headers)
-        self.assertEqual(l2_headers[POLY_ADDRESS], signer.address())
-        self.assertIsNotNone(l2_headers[POLY_SIGNATURE])
-        self.assertIsNotNone(l2_headers[POLY_TIMESTAMP])
+        self.assertEqual(l2_headers[KUEST_ADDRESS], signer.address())
+        self.assertIsNotNone(l2_headers[KUEST_SIGNATURE])
+        self.assertIsNotNone(l2_headers[KUEST_TIMESTAMP])
         self.assertTrue(
-            int(l2_headers[POLY_TIMESTAMP]) <= int(datetime.now().timestamp())
+            int(l2_headers[KUEST_TIMESTAMP]) <= int(datetime.now().timestamp())
         )
-        self.assertEqual(l2_headers[POLY_API_KEY], creds.api_key)
-        self.assertEqual(l2_headers[POLY_PASSPHRASE], creds.api_passphrase)
+        self.assertEqual(l2_headers[KUEST_API_KEY], creds.api_key)
+        self.assertEqual(l2_headers[KUEST_PASSPHRASE], creds.api_passphrase)

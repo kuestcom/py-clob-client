@@ -13,9 +13,9 @@ def get_contract_config(chainID: int, neg_risk: bool = False) -> ContractConfig:
             conditional_tokens="0x4D97DCd97eC945f40cF65F87097ACe5EA0476045",
         ),
         80002: ContractConfig(
-            exchange="0xdFE02Eb6733538f8Ea35D585af8DE5958AD99E40",
-            collateral="0x9c4e1703476e875070ee25b56a58b008cfb8fa78",
-            conditional_tokens="0x69308FB512518e39F9b16112fA8d994F4e2Bf8bB",
+            exchange="0xE79717fE8456C620cFde6156b6AeAd79C4875Ca2",
+            collateral="0x29604FdE966E3AEe42d9b5451BD9912863b3B904",
+            conditional_tokens="0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59",
         ),
     }
 
@@ -26,9 +26,9 @@ def get_contract_config(chainID: int, neg_risk: bool = False) -> ContractConfig:
             conditional_tokens="0x4D97DCd97eC945f40cF65F87097ACe5EA0476045",
         ),
         80002: ContractConfig(
-            exchange="0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296",
-            collateral="0x9c4e1703476e875070ee25b56a58b008cfb8fa78",
-            conditional_tokens="0x69308FB512518e39F9b16112fA8d994F4e2Bf8bB",
+            exchange="0xe2ed8eE54fa279b1006333EbeE68192EDB141207",
+            collateral="0x29604FdE966E3AEe42d9b5451BD9912863b3B904",
+            conditional_tokens="0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59",
         ),
     }
 
