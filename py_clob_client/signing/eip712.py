@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from kuest_eip712_structs import make_domain
 from eth_utils import keccak
@@ -16,7 +17,7 @@ def get_clob_auth_domain(chain_id: int):
     return make_domain(name=CLOB_DOMAIN_NAME, version=CLOB_VERSION, chainId=chain_id)
 
 
-def resolve_auth_message(message: str | None = None) -> str:
+def resolve_auth_message(message: Optional[str] = None) -> str:
     if message:
         return message
 
@@ -28,7 +29,7 @@ def resolve_auth_message(message: str | None = None) -> str:
 
 
 def sign_clob_auth_message(
-    signer: Signer, timestamp: int, nonce: int, message: str | None = None
+    signer: Signer, timestamp: int, nonce: int, message: Optional[str] = None
 ) -> str:
     clob_auth_msg = ClobAuth(
         address=signer.address(),
