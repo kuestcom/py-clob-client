@@ -17,10 +17,10 @@ setuptools.setup(
     install_requires=[
         "eth-account>=0.13.0",
         "eth-utils>=4.1.1",
-        "poly_eip712_structs>=0.0.1",
-        "py-order-utils>=0.3.2",
+        "poly_eip712_structs @ git+https://github.com/kuestcom/py-eip712-structs@main",
+        "py_order_utils @ git+https://github.com/kuestcom/python-order-utils@main",
         "python-dotenv",
-        "py-builder-signing-sdk>=0.0.2",
+        "py_builder_signing_sdk @ git+https://github.com/kuestcom/py-builder-signing-sdk@main",
         "httpx[http2]>=0.27.0",
     ],
     project_urls={
