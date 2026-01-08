@@ -1,6 +1,6 @@
 import os
 
-from poly_eip712_structs import make_domain
+from kuest_eip712_structs import make_domain
 from eth_utils import keccak
 from py_order_utils.utils import prepend_zx
 

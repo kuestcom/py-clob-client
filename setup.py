@@ -17,7 +17,7 @@ setuptools.setup(
     install_requires=[
         "eth-account>=0.13.0",
         "eth-utils>=4.1.1",
-        "poly_eip712_structs @ git+https://github.com/kuestcom/py-eip712-structs@main",
+        "kuest_eip712_structs @ git+https://github.com/kuestcom/py-eip712-structs@main",
         "py_order_utils @ git+https://github.com/kuestcom/python-order-utils@main",
         "python-dotenv",
         "py_builder_signing_sdk @ git+https://github.com/kuestcom/py-builder-signing-sdk@main",

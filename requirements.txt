@@ -1,7 +1,7 @@
 black==24.4.2
 eth-account===0.13.0
 eth-utils===4.1.1
-poly_eip712_structs @ git+https://github.com/kuestcom/py-eip712-structs@main
+kuest_eip712_structs @ git+https://github.com/kuestcom/py-eip712-structs@main
 py_order_utils @ git+https://github.com/kuestcom/python-order-utils@main
 pytest==8.2.2
 python-dotenv==0.19.2
