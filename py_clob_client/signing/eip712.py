@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 from kuest_eip712_structs import make_domain
@@ -18,14 +17,7 @@ def get_clob_auth_domain(chain_id: int):
 
 
 def resolve_auth_message(message: Optional[str] = None) -> str:
-    if message:
-        return message
-
-    env_message = os.getenv("KUEST_AUTH_MESSAGE")
-    if env_message:
-        return env_message
-
-    return DEFAULT_AUTH_MESSAGE
+    return message or DEFAULT_AUTH_MESSAGE
 
 
 def sign_clob_auth_message(
