@@ -1,12 +1,12 @@
-## python-order-utils Monorepo Contribution Guide
+## py-clob-client Contribution Guide
 
-All contributions to the python-order-utils are welcome and greatly appreciated! This document serves to outline the process for contributions and help you get set up.
+All contributions to the py-clob-client are welcome and greatly appreciated! This document serves to outline the process for contributions and help you get set up.
 
 ### Steps to get started
 
-1. Fork 'Polymarket/python-order-utils'
+1. Fork 'kuestcom/py-clob-client'
 2. Clone your fork
-3. Follow the [installation instructions](./README.md) in the monorepo's top level README.
+3. Follow the [installation instructions](./README.md) in the top level README.
 4. Open pull requests with the `[WIP]` flag against the `main` branch and include a description of the intended change in the PR description.
 
 Before removing the `[WIP]` tag and submitting a PR for review, make sure that:
@@ -26,4 +26,3 @@ Name your branch with the format `{fix | feat | refactor | chore }/{ description
 - A `feat` adds new functionality/interface surface area
 - A `refactor` changes no business logic or interfaces, but improves implementation
 - A `chore` addresses minor improvements or configuration changes
-
