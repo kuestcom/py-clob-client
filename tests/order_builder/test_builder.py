@@ -14,7 +14,7 @@ from py_clob_client.signer import Signer
 from py_clob_client.order_builder.builder import OrderBuilder, ROUNDING_CONFIG
 from py_clob_client.order_builder.helpers import decimal_places, round_normal
 from py_order_utils.model import (
-    POLY_GNOSIS_SAFE as GNOSIS_SAFE_WALLET,
+    GNOSIS_SAFE_WALLET,
     EOA,
     BUY as UtilsBuy,
     SELL as UtilsSell,
