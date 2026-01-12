@@ -24,13 +24,13 @@ def get_contract_config(chainID: int, neg_risk: bool = False) -> ContractConfig:
     NEG_RISK_CONFIG = {
         # Kuest NegRisk contracts (Polygon mainnet)
         137: ContractConfig(
-            exchange="0xe2ed8eE54fa279b1006333EbeE68192EDB141207",
+            exchange="0xccBe425A0Aa24DCEf81f2e6edE3568a1683e7cbe",
             collateral="0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
             conditional_tokens="0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59",
         ),
         # Kuest NegRisk contracts (Polygon Amoy)
         80002: ContractConfig(
-            exchange="0xe2ed8eE54fa279b1006333EbeE68192EDB141207",
+            exchange="0xccBe425A0Aa24DCEf81f2e6edE3568a1683e7cbe",
             collateral="0x29604FdE966E3AEe42d9b5451BD9912863b3B904",
             conditional_tokens="0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59",
         ),

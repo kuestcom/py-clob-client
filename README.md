@@ -261,8 +261,8 @@ Here's a simple breakdown of what needs to be approved:
 - Token: `0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174`
 - Approve for these contracts:
   - `0xE79717fE8456C620cFde6156b6AeAd79C4875Ca2` (Main exchange)
-  - `0xe2ed8eE54fa279b1006333EbeE68192EDB141207` (Neg risk exchange)
-  - `0xA8D45917999a9c3833C797EFfB31e3D878e27A33` (Neg risk adapter)
+  - `0xccBe425A0Aa24DCEf81f2e6edE3568a1683e7cbe` (Neg risk exchange)
+  - `0xc26DACF369DC1eA12421B9104031Cb5a2F8C9215` (Neg risk adapter)
 
 **For Conditional Tokens (your outcome tokens):**
 - Token: `0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59`
