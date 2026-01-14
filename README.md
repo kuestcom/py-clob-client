@@ -1,7 +1,7 @@
 # Kuest Python CLOB Client
 
-<a href='https://pypi.org/project/py-clob-client'>
-    <img src='https://img.shields.io/pypi/v/py-clob-client.svg' alt='PyPI'/>
+<a href='https://pypi.org/project/kuest-py-clob-client'>
+    <img src='https://img.shields.io/pypi/v/kuest-py-clob-client.svg' alt='PyPI'/>
 </a>
 
 Python client for the Kuest Central Limit Order Book (CLOB).
@@ -12,7 +12,7 @@ Python client for the Kuest Central Limit Order Book (CLOB).
 
 ```bash
 # install from PyPI (Python 3.9>)
-pip install py-clob-client
+pip install kuest-py-clob-client
 ```
 ## Usage
 
