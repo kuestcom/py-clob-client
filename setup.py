@@ -17,7 +17,7 @@ setuptools.setup(
     install_requires=[
         "eth-account>=0.13.0",
         "eth-utils>=4.1.1",
-        "kuest-py-eip712-structs==0.0.1",
+        "kuest-py-eip712-structs==0.0.2",
         "kuest-py-order-utils==0.3.2",
         "python-dotenv",
         "kuest-py-builder-signing-sdk==0.0.1",
