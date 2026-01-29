@@ -9,30 +9,30 @@ def get_contract_config(chainID: int, neg_risk: bool = False) -> ContractConfig:
     CONFIG = {
         # Kuest contracts (Polygon mainnet)
         137: ContractConfig(
-            exchange="0xE79717fE8456C620cFde6156b6AeAd79C4875Ca2",
+            exchange="0xB5592f7CccA122558D2201e190826276f3a661cb",
             collateral="0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-            conditional_tokens="0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59",
+            conditional_tokens="0x4682048725865bf17067bd85fF518527A262A9C7",
         ),
         # Kuest contracts (Polygon Amoy)
         80002: ContractConfig(
-            exchange="0xE79717fE8456C620cFde6156b6AeAd79C4875Ca2",
-            collateral="0x29604FdE966E3AEe42d9b5451BD9912863b3B904",
-            conditional_tokens="0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59",
+            exchange="0xB5592f7CccA122558D2201e190826276f3a661cb",
+            collateral="0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582",
+            conditional_tokens="0x4682048725865bf17067bd85fF518527A262A9C7",
         ),
     }
 
     NEG_RISK_CONFIG = {
         # Kuest NegRisk contracts (Polygon mainnet)
         137: ContractConfig(
-            exchange="0xccBe425A0Aa24DCEf81f2e6edE3568a1683e7cbe",
+            exchange="0xef02d1Ea5B42432C4E99C2785d1a4020d2FB24F5",
             collateral="0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-            conditional_tokens="0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59",
+            conditional_tokens="0x4682048725865bf17067bd85fF518527A262A9C7",
         ),
         # Kuest NegRisk contracts (Polygon Amoy)
         80002: ContractConfig(
-            exchange="0xccBe425A0Aa24DCEf81f2e6edE3568a1683e7cbe",
-            collateral="0x29604FdE966E3AEe42d9b5451BD9912863b3B904",
-            conditional_tokens="0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59",
+            exchange="0xef02d1Ea5B42432C4E99C2785d1a4020d2FB24F5",
+            collateral="0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582",
+            conditional_tokens="0x4682048725865bf17067bd85fF518527A262A9C7",
         ),
     }
 

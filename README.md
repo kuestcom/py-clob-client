@@ -260,12 +260,12 @@ Here's a simple breakdown of what needs to be approved:
 **For USDC (your trading currency):**
 - Token: `0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174`
 - Approve for these contracts:
-  - `0xE79717fE8456C620cFde6156b6AeAd79C4875Ca2` (Main exchange)
-  - `0xccBe425A0Aa24DCEf81f2e6edE3568a1683e7cbe` (Neg risk exchange)
-  - `0xc26DACF369DC1eA12421B9104031Cb5a2F8C9215` (Neg risk adapter)
+  - `0xB5592f7CccA122558D2201e190826276f3a661cb` (Main exchange)
+  - `0xef02d1Ea5B42432C4E99C2785d1a4020d2FB24F5` (Neg risk exchange)
+  - `0x724259Fe88100FE18C134324C4853975FBDa4d76` (Neg risk adapter)
 
 **For Conditional Tokens (your outcome tokens):**
-- Token: `0x9432978d0f8A0E1a5317DD545B4a9ad32da8AD59`
+- Token: `0x4682048725865bf17067bd85fF518527A262A9C7`
 - Approve for the same three contracts above
 
 ### Example Code
