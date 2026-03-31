@@ -18,7 +18,7 @@ setuptools.setup(
         "eth-account>=0.13.0",
         "eth-utils>=4.1.1",
         "kuest-py-eip712-structs==0.0.3",
-        "kuest-py-order-utils==0.3.3",
+        "kuest-py-order-utils==0.3.4",
         "python-dotenv",
         "kuest-py-builder-signing-sdk==0.0.2",
         "httpx[http2]>=0.27.0",
