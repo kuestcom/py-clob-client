@@ -1,5 +1,6 @@
 import logging
 import json
+import time
 from typing import Optional
 
 from py_builder_signing_sdk.config import BuilderConfig
@@ -122,6 +123,7 @@ class ClobClient:
         signature_type: int = None,
         funder: str = None,
         builder_config: BuilderConfig = None,
+        tick_size_ttl: float = 300.0,
     ):
         """
         Initializes the clob client
@@ -152,6 +154,8 @@ class ClobClient:
 
         # local cache
         self.__tick_sizes = {}
+        self.__tick_size_timestamps = {}
+        self.__tick_size_ttl = tick_size_ttl
         self.__neg_risk = {}
         self.__fee_rates = {}
 
@@ -305,7 +309,9 @@ class ClobClient:
         request_args = RequestArgs(method="POST", request_path=CREATE_READONLY_API_KEY)
         headers = create_level_2_headers(self.signer, self.creds, request_args)
 
-        response = post("{}{}".format(self.host, CREATE_READONLY_API_KEY), headers=headers)
+        response = post(
+            "{}{}".format(self.host, CREATE_READONLY_API_KEY), headers=headers
+        )
         try:
             return ReadonlyApiKeyResponse(api_key=response["apiKey"])
         except:
@@ -396,13 +402,40 @@ class ClobClient:
         return post("{}{}".format(self.host, GET_SPREADS), data=body)
 
     def get_tick_size(self, token_id: str) -> TickSize:
-        if token_id in self.__tick_sizes:
+        cached_at = self.__tick_size_timestamps.get(token_id)
+
+        if (
+            token_id in self.__tick_sizes
+            and cached_at is not None
+            and (time.monotonic() - cached_at) < self.__tick_size_ttl
+        ):
             return self.__tick_sizes[token_id]
 
         result = get("{}{}?token_id={}".format(self.host, GET_TICK_SIZE, token_id))
         self.__tick_sizes[token_id] = str(result["minimum_tick_size"])
+        self.__tick_size_timestamps[token_id] = time.monotonic()
 
         return self.__tick_sizes[token_id]
+
+    def clear_tick_size_cache(self, token_id: str = None):
+        """
+        Clear the cached tick size for one market or for all markets.
+        """
+        if token_id is not None:
+            self.__tick_sizes.pop(token_id, None)
+            self.__tick_size_timestamps.pop(token_id, None)
+            return
+
+        self.__tick_sizes.clear()
+        self.__tick_size_timestamps.clear()
+
+    def _update_tick_size_from_order_book(self, book: OrderBookSummary):
+        """
+        Refresh the tick size cache from an orderbook response when available.
+        """
+        if book and book.asset_id and book.tick_size:
+            self.__tick_sizes[book.asset_id] = str(book.tick_size)
+            self.__tick_size_timestamps[book.asset_id] = time.monotonic()
 
     def get_neg_risk(self, token_id: str) -> bool:
         if token_id in self.__neg_risk:
@@ -561,7 +594,8 @@ class ClobClient:
         """
         self.assert_level_2_auth()
         body = [
-            order_to_json(arg.order, self.creds.api_key, arg.orderType, arg.postOnly) for arg in args
+            order_to_json(arg.order, self.creds.api_key, arg.orderType, arg.postOnly)
+            for arg in args
         ]
         request_args = RequestArgs(
             method="POST",
@@ -586,7 +620,9 @@ class ClobClient:
             data=request_args.serialized_body,
         )
 
-    def post_order(self, order, orderType: OrderType = OrderType.GTC, post_only: bool = False):
+    def post_order(
+        self, order, orderType: OrderType = OrderType.GTC, post_only: bool = False
+    ):
         """
         Posts the order
         """
@@ -684,12 +720,15 @@ class ClobClient:
         self.assert_level_2_auth()
         body = {"heartbeat_id": heartbeat_id}
         serialized = json.dumps(body, separators=(",", ":"), ensure_ascii=False)
-        request_args = RequestArgs(method="POST", request_path=POST_HEARTBEAT, body=body, serialized_body=serialized)
+        request_args = RequestArgs(
+            method="POST",
+            request_path=POST_HEARTBEAT,
+            body=body,
+            serialized_body=serialized,
+        )
         headers = create_level_2_headers(self.signer, self.creds, request_args)
         return post(
-            "{}{}".format(self.host, POST_HEARTBEAT),
-            headers=headers,
-            data=serialized
+            "{}{}".format(self.host, POST_HEARTBEAT), headers=headers, data=serialized
         )
 
     def cancel_market_orders(self, market: str = "", asset_id: str = ""):
@@ -739,7 +778,9 @@ class ClobClient:
         Fetches the orderbook for the token_id
         """
         raw_obs = get("{}{}?token_id={}".format(self.host, GET_ORDER_BOOK, token_id))
-        return parse_raw_orderbook_summary(raw_obs)
+        result = parse_raw_orderbook_summary(raw_obs)
+        self._update_tick_size_from_order_book(result)
+        return result
 
     def get_order_books(self, params: list[BookParams]) -> list[OrderBookSummary]:
         """
@@ -747,7 +788,10 @@ class ClobClient:
         """
         body = [{"token_id": param.token_id} for param in params]
         raw_obs = post("{}{}".format(self.host, GET_ORDER_BOOKS), data=body)
-        return [parse_raw_orderbook_summary(r) for r in raw_obs]
+        results = [parse_raw_orderbook_summary(r) for r in raw_obs]
+        for book in results:
+            self._update_tick_size_from_order_book(book)
+        return results
 
     def get_order_book_hash(self, orderbook: OrderBookSummary) -> str:
         """

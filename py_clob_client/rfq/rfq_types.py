@@ -5,7 +5,7 @@ This module defines all input and response types used by the RFQ client.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Literal
 from enum import Enum
 
 
@@ -179,12 +179,12 @@ class GetRfqRequestsParams:
     """Filter by specific request IDs."""
 
     user_address: Optional[str] = None
-    """Filter by user address."""
+    """Legacy compatibility filter by user address."""
 
     states: Optional[List[str]] = None
-    """Filter by multiple states."""
+    """Legacy compatibility filter by multiple states."""
 
-    state: Optional[str] = None
+    state: Optional[Literal["active", "inactive"]] = None
     """Single state filter ("active" or "inactive")."""
 
     markets: Optional[List[str]] = None
@@ -208,10 +208,10 @@ class GetRfqRequestsParams:
     price_max: Optional[float] = None
     """Maximum price filter."""
 
-    sort_by: Optional[str] = None
+    sort_by: Optional[Literal["price", "expiry", "size", "created"]] = None
     """Field to sort by."""
 
-    sort_dir: Optional[str] = None
+    sort_dir: Optional[Literal["asc", "desc"]] = None
     """Sort direction: "asc" or "desc"."""
 
     limit: Optional[int] = None
@@ -236,13 +236,13 @@ class GetRfqQuotesParams:
     """Filter by request IDs."""
 
     user_address: Optional[str] = None
-    """Filter by user address."""
+    """Legacy compatibility filter by user address."""
 
     states: Optional[List[str]] = None
-    """Filter by multiple states."""
+    """Legacy compatibility filter by multiple states."""
 
-    state: Optional[str] = None
-    """Single state filter."""
+    state: Optional[Literal["active", "inactive"]] = None
+    """Single state filter ("active" or "inactive")."""
 
     markets: Optional[List[str]] = None
     """Filter by market condition IDs."""
@@ -265,10 +265,10 @@ class GetRfqQuotesParams:
     price_max: Optional[float] = None
     """Maximum price filter."""
 
-    sort_by: Optional[str] = None
+    sort_by: Optional[Literal["price", "expiry", "created"]] = None
     """Field to sort by."""
 
-    sort_dir: Optional[str] = None
+    sort_dir: Optional[Literal["asc", "desc"]] = None
     """Sort direction: "asc" or "desc"."""
 
     limit: Optional[int] = None

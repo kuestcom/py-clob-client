@@ -65,12 +65,14 @@ def to_camel_case(snake_str: str) -> str:
     return components[0] + "".join(x.title() for x in components[1:])
 
 
-def parse_rfq_requests_params(params: Optional[GetRfqRequestsParams] = None) -> Dict[str, Any]:
+def parse_rfq_requests_params(
+    params: Optional[GetRfqRequestsParams] = None,
+) -> Dict[str, Any]:
     """
     Convert GetRfqRequestsParams to query string parameters.
 
-    Arrays are converted to comma-separated strings.
-    Snake_case fields are converted to camelCase.
+    Arrays are preserved as Python lists so callers can serialize them with
+    `urllib.parse.urlencode(..., doseq=True)`.
 
     Args:
         params: Optional filter parameters
@@ -104,23 +106,25 @@ def parse_rfq_requests_params(params: Optional[GetRfqRequestsParams] = None) -> 
         if value is not None:
             result[api_name] = value
 
-    # Array fields (convert to comma-separated strings)
+    # Array fields
     if params.request_ids:
-        result["requestIds"] = ",".join(params.request_ids)
+        result["requestIds"] = params.request_ids
     if params.states:
-        result["states"] = ",".join(params.states)
+        result["states"] = params.states
     if params.markets:
-        result["markets"] = ",".join(params.markets)
+        result["markets"] = params.markets
 
     return result
 
 
-def parse_rfq_quotes_params(params: Optional[GetRfqQuotesParams] = None) -> Dict[str, Any]:
+def parse_rfq_quotes_params(
+    params: Optional[GetRfqQuotesParams] = None,
+) -> Dict[str, Any]:
     """
     Convert GetRfqQuotesParams to query string parameters.
 
-    Arrays are converted to comma-separated strings.
-    Snake_case fields are converted to camelCase.
+    Arrays are preserved as Python lists so callers can serialize them with
+    `urllib.parse.urlencode(..., doseq=True)`.
 
     Args:
         params: Optional filter parameters
@@ -154,14 +158,14 @@ def parse_rfq_quotes_params(params: Optional[GetRfqQuotesParams] = None) -> Dict
         if value is not None:
             result[api_name] = value
 
-    # Array fields (convert to comma-separated strings)
+    # Array fields
     if params.quote_ids:
-        result["quoteIds"] = ",".join(params.quote_ids)
+        result["quoteIds"] = params.quote_ids
     if params.request_ids:
-        result["requestIds"] = ",".join(params.request_ids)
+        result["requestIds"] = params.request_ids
     if params.states:
-        result["states"] = ",".join(params.states)
+        result["states"] = params.states
     if params.markets:
-        result["markets"] = ",".join(params.markets)
+        result["markets"] = params.markets
 
     return result

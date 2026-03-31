@@ -7,6 +7,7 @@ including creating requests, quotes, and executing trades.
 
 import logging
 import json
+from urllib.parse import urlencode
 from typing import Optional, Any, TYPE_CHECKING
 
 from ..clob_types import RequestArgs, OrderArgs, PartialCreateOrderOptions
@@ -22,6 +23,8 @@ from ..endpoints import (
     CREATE_RFQ_QUOTE,
     CANCEL_RFQ_QUOTE,
     GET_RFQ_QUOTES,
+    GET_RFQ_REQUESTER_QUOTES,
+    GET_RFQ_QUOTER_QUOTES,
     GET_RFQ_BEST_QUOTE,
     RFQ_REQUESTS_ACCEPT,
     RFQ_QUOTE_APPROVE,
@@ -31,7 +34,6 @@ from ..endpoints import (
 from .rfq_types import (
     RfqUserRequest,
     RfqUserQuote,
-
     CancelRfqRequestParams,
     CancelRfqQuoteParams,
     AcceptQuoteParams,
@@ -81,7 +83,9 @@ class RfqClient:
         """
         self._parent.assert_level_2_auth()
 
-    def _get_l2_headers(self, method: str, endpoint: str, body: Any = None, serialized_body: Any = None) -> dict:
+    def _get_l2_headers(
+        self, method: str, endpoint: str, body: Any = None, serialized_body: Any = None
+    ) -> dict:
         """
         Create L2 authentication headers for a request.
 
@@ -213,8 +217,12 @@ class RfqClient:
             "userType": user_type,
         }
         serialized_body = json.dumps(body, separators=(",", ":"), ensure_ascii=False)
-        headers = self._get_l2_headers("POST", CREATE_RFQ_REQUEST, body, serialized_body)
-        return post(self._build_url(CREATE_RFQ_REQUEST), headers=headers, data=serialized_body)
+        headers = self._get_l2_headers(
+            "POST", CREATE_RFQ_REQUEST, body, serialized_body
+        )
+        return post(
+            self._build_url(CREATE_RFQ_REQUEST), headers=headers, data=serialized_body
+        )
 
     def cancel_rfq_request(self, params: CancelRfqRequestParams) -> str:
         """
@@ -230,12 +238,14 @@ class RfqClient:
 
         body = {"requestId": params.request_id}
         serialized_body = json.dumps(body, separators=(",", ":"), ensure_ascii=False)
-        headers = self._get_l2_headers("DELETE", CANCEL_RFQ_REQUEST, body, serialized_body)
-        return delete(self._build_url(CANCEL_RFQ_REQUEST), headers=headers, data=serialized_body)
+        headers = self._get_l2_headers(
+            "DELETE", CANCEL_RFQ_REQUEST, body, serialized_body
+        )
+        return delete(
+            self._build_url(CANCEL_RFQ_REQUEST), headers=headers, data=serialized_body
+        )
 
-    def get_rfq_requests(
-        self, params: Optional[GetRfqRequestsParams] = None
-    ) -> dict:
+    def get_rfq_requests(self, params: Optional[GetRfqRequestsParams] = None) -> dict:
         """
         Get RFQ requests with optional filtering.
 
@@ -253,8 +263,7 @@ class RfqClient:
         # Build URL with query params
         url = self._build_url(GET_RFQ_REQUESTS)
         if query_params:
-            query_string = "&".join(f"{k}={v}" for k, v in query_params.items())
-            url = f"{url}?{query_string}"
+            url = f"{url}?{urlencode(query_params, doseq=True)}"
 
         return get(url, headers=headers)
 
@@ -370,11 +379,17 @@ class RfqClient:
         }
         serialized_body = json.dumps(body, separators=(",", ":"), ensure_ascii=False)
         headers = self._get_l2_headers("POST", CREATE_RFQ_QUOTE, body, serialized_body)
-        return post(self._build_url(CREATE_RFQ_QUOTE), headers=headers, data=serialized_body)
+        return post(
+            self._build_url(CREATE_RFQ_QUOTE), headers=headers, data=serialized_body
+        )
 
     def get_rfq_quotes(self, params: Optional[GetRfqQuotesParams] = None) -> dict:
         """
-        Get RFQ quotes with optional filtering.
+        Get RFQ quotes from the legacy unified endpoint.
+
+        This method is kept for backwards compatibility. Prefer
+        `get_rfq_requester_quotes` or `get_rfq_quoter_quotes` for the
+        role-specific RFQ views exposed by the current API.
 
         Args:
             params: Optional filter parameters.
@@ -390,8 +405,41 @@ class RfqClient:
         # Build URL with query params
         url = self._build_url(GET_RFQ_QUOTES)
         if query_params:
-            query_string = "&".join(f"{k}={v}" for k, v in query_params.items())
-            url = f"{url}?{query_string}"
+            url = f"{url}?{urlencode(query_params, doseq=True)}"
+
+        return get(url, headers=headers)
+
+    def get_rfq_requester_quotes(
+        self, params: Optional[GetRfqQuotesParams] = None
+    ) -> dict:
+        """
+        Get quotes on RFQ requests created by the authenticated user.
+        """
+        self._ensure_l2_auth()
+
+        headers = self._get_l2_headers("GET", GET_RFQ_REQUESTER_QUOTES)
+        query_params = parse_rfq_quotes_params(params)
+
+        url = self._build_url(GET_RFQ_REQUESTER_QUOTES)
+        if query_params:
+            url = f"{url}?{urlencode(query_params, doseq=True)}"
+
+        return get(url, headers=headers)
+
+    def get_rfq_quoter_quotes(
+        self, params: Optional[GetRfqQuotesParams] = None
+    ) -> dict:
+        """
+        Get quotes created by the authenticated user.
+        """
+        self._ensure_l2_auth()
+
+        headers = self._get_l2_headers("GET", GET_RFQ_QUOTER_QUOTES)
+        query_params = parse_rfq_quotes_params(params)
+
+        url = self._build_url(GET_RFQ_QUOTER_QUOTES)
+        if query_params:
+            url = f"{url}?{urlencode(query_params, doseq=True)}"
 
         return get(url, headers=headers)
 
@@ -413,7 +461,7 @@ class RfqClient:
 
         url = self._build_url(GET_RFQ_BEST_QUOTE)
         if params and params.request_id:
-            url = f"{url}?requestId={params.request_id}"
+            url = f"{url}?{urlencode({'requestId': params.request_id})}"
 
         return get(url, headers=headers)
 
@@ -431,8 +479,12 @@ class RfqClient:
 
         body = {"quoteId": params.quote_id}
         serialized_body = json.dumps(body, separators=(",", ":"), ensure_ascii=False)
-        headers = self._get_l2_headers("DELETE", CANCEL_RFQ_QUOTE, body, serialized_body)
-        return delete(self._build_url(CANCEL_RFQ_QUOTE), headers=headers, data=serialized_body)
+        headers = self._get_l2_headers(
+            "DELETE", CANCEL_RFQ_QUOTE, body, serialized_body
+        )
+        return delete(
+            self._build_url(CANCEL_RFQ_QUOTE), headers=headers, data=serialized_body
+        )
 
     # =========================================================================
     # Trade execution methods
@@ -455,7 +507,7 @@ class RfqClient:
         """
         self._ensure_l2_auth()
 
-        resp = self.get_rfq_quotes(
+        resp = self.get_rfq_requester_quotes(
             GetRfqQuotesParams(quote_ids=[params.quote_id])
         )
 
@@ -511,8 +563,12 @@ class RfqClient:
             accept_payload.get("tokenId"),
             accept_payload.get("side"),
         )
-        serialized_body = json.dumps(accept_payload, separators=(",", ":"), ensure_ascii=False)
-        headers = self._get_l2_headers("POST", RFQ_REQUESTS_ACCEPT, accept_payload, serialized_body)
+        serialized_body = json.dumps(
+            accept_payload, separators=(",", ":"), ensure_ascii=False
+        )
+        headers = self._get_l2_headers(
+            "POST", RFQ_REQUESTS_ACCEPT, accept_payload, serialized_body
+        )
         return post(
             self._build_url(RFQ_REQUESTS_ACCEPT),
             headers=headers,
@@ -537,7 +593,7 @@ class RfqClient:
         self._ensure_l2_auth()
 
         # Step 1: Fetch the RFQ quote
-        rfq_quotes = self.get_rfq_quotes(
+        rfq_quotes = self.get_rfq_quoter_quotes(
             GetRfqQuotesParams(quote_ids=[params.quote_id])
         )
 
@@ -594,8 +650,12 @@ class RfqClient:
             "signatureType": int(order_dict["signatureType"]),
             "signature": order_dict["signature"],
         }
-        serialized_body = json.dumps(approve_payload, separators=(",", ":"), ensure_ascii=False)
-        headers = self._get_l2_headers("POST", RFQ_QUOTE_APPROVE, approve_payload, serialized_body)
+        serialized_body = json.dumps(
+            approve_payload, separators=(",", ":"), ensure_ascii=False
+        )
+        headers = self._get_l2_headers(
+            "POST", RFQ_QUOTE_APPROVE, approve_payload, serialized_body
+        )
         return post(
             self._build_url(RFQ_QUOTE_APPROVE),
             headers=headers,
