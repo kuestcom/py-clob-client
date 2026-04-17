@@ -2,6 +2,7 @@ import hashlib
 import json
 
 from .clob_types import OrderBookSummary, OrderSummary, TickSize
+from .site_config import get_site_order_payload
 
 
 def parse_raw_orderbook_summary(raw_obs: any) -> OrderBookSummary:
@@ -59,7 +60,13 @@ def generate_orderbook_summary_hash(orderbook: OrderBookSummary) -> str:
 
 
 def order_to_json(order, owner, orderType, post_only: bool = False) -> dict:
-    return {"order": order.dict(), "owner": owner, "orderType": orderType, "postOnly": post_only}
+    return {
+        "order": order.dict(),
+        "owner": owner,
+        "orderType": orderType,
+        "postOnly": post_only,
+        **get_site_order_payload(),
+    }
 
 
 def is_tick_size_smaller(a: TickSize, b: TickSize) -> bool:

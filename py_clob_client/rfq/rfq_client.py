@@ -49,6 +49,7 @@ from .rfq_helpers import (
     parse_rfq_quotes_params,
     COLLATERAL_TOKEN_DECIMALS,
 )
+from ..site_config import get_site_order_payload
 
 if TYPE_CHECKING:
     from ..client import ClobClient
@@ -208,6 +209,7 @@ class RfqClient:
 
         # Post directly to the server
         self._ensure_l2_auth()
+        self._parent._ensure_geoblock_allowed()
 
         body = {
             "assetIn": asset_in,
@@ -368,6 +370,7 @@ class RfqClient:
 
         # Post directly to the server
         self._ensure_l2_auth()
+        self._parent._ensure_geoblock_allowed()
 
         body = {
             "requestId": request_id,
@@ -506,6 +509,7 @@ class RfqClient:
             "OK" on success.
         """
         self._ensure_l2_auth()
+        self._parent._ensure_geoblock_allowed()
 
         resp = self.get_rfq_requester_quotes(
             GetRfqQuotesParams(quote_ids=[params.quote_id])
@@ -540,6 +544,7 @@ class RfqClient:
             "requestId": params.request_id,
             "quoteId": params.quote_id,
             "owner": self._parent.creds.api_key,
+            **get_site_order_payload(),
             # Order fields from dict
             "salt": int(order_dict["salt"]),
             "maker": order_dict["maker"],
@@ -591,6 +596,7 @@ class RfqClient:
             "OK" on success.
         """
         self._ensure_l2_auth()
+        self._parent._ensure_geoblock_allowed()
 
         # Step 1: Fetch the RFQ quote
         rfq_quotes = self.get_rfq_quoter_quotes(
@@ -635,6 +641,7 @@ class RfqClient:
             "requestId": params.request_id,
             "quoteId": params.quote_id,
             "owner": self._parent.creds.api_key,
+            **get_site_order_payload(),
             # Order fields from dict
             "salt": int(order_dict["salt"]),
             "maker": order_dict["maker"],

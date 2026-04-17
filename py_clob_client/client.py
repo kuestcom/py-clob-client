@@ -2,6 +2,7 @@ import logging
 import json
 import time
 from typing import Optional
+from urllib.parse import quote
 
 from py_builder_signing_sdk.config import BuilderConfig
 
@@ -111,6 +112,7 @@ from .utilities import (
     price_valid,
 )
 from .rfq import RfqClient
+from .site_config import GEOBLOCK_HOST, SITE_CONFIG
 
 
 class ClobClient:
@@ -158,6 +160,7 @@ class ClobClient:
         self.__tick_size_ttl = tick_size_ttl
         self.__neg_risk = {}
         self.__fee_rates = {}
+        self._geoblock_status = None
 
         # RFQ client
         self.rfq = RfqClient(self)
@@ -593,6 +596,7 @@ class ClobClient:
         Posts orders
         """
         self.assert_level_2_auth()
+        self._ensure_geoblock_allowed()
         body = [
             order_to_json(arg.order, self.creds.api_key, arg.orderType, arg.postOnly)
             for arg in args
@@ -630,6 +634,7 @@ class ClobClient:
             raise Exception("post_only orders can only be of type GTC or GTD")
 
         self.assert_level_2_auth()
+        self._ensure_geoblock_allowed()
         body = order_to_json(order, self.creds.api_key, orderType, post_only)
         request_args = RequestArgs(
             method="POST",
@@ -866,7 +871,11 @@ class ClobClient:
             raise PolyException(BUILDER_AUTH_UNAVAILABLE)
 
     def can_builder_auth(self) -> bool:
-        return self.builder_config is not None and self.builder_config.is_valid()
+        return (
+            SITE_CONFIG["builder_mode"]
+            and self.builder_config is not None
+            and self.builder_config.is_valid()
+        )
 
     def _get_client_mode(self):
         if self.signer is not None and self.creds is not None:
@@ -906,6 +915,28 @@ class ClobClient:
         if headers:
             return headers.to_dict()
         return None
+
+    def _ensure_geoblock_allowed(self):
+        if not SITE_CONFIG["geoblock"]:
+            return
+
+        if self._geoblock_status is None:
+            site_url = SITE_CONFIG["site_url"].strip()
+            if not site_url:
+                raise PolyException("site_url must be configured when geoblock is enabled")
+
+            self._geoblock_status = get(
+                "{}/?url={}".format(GEOBLOCK_HOST, quote(site_url, safe=""))
+            )
+
+        if self._geoblock_status.get("blocked"):
+            raise PolyException(
+                "trading blocked for configured site_url ({}) in {}, {}".format(
+                    SITE_CONFIG["site_url"],
+                    self._geoblock_status.get("country", "unknown"),
+                    self._geoblock_status.get("region", "unknown"),
+                )
+            )
 
     def get_notifications(self):
         """
