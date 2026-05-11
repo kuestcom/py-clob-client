@@ -14,6 +14,7 @@ from .headers.headers import (
 )
 from .signer import Signer
 from .config import get_contract_config
+from .order_utils import SignatureTypeV2
 
 from .endpoints import (
     CANCEL,
@@ -46,11 +47,11 @@ from .endpoints import (
     IS_ORDER_SCORING,
     GET_TICK_SIZE,
     GET_NEG_RISK,
-    GET_FEE_RATE,
     ARE_ORDERS_SCORING,
     GET_SIMPLIFIED_MARKETS,
     GET_MARKETS,
     GET_MARKET,
+    GET_CLOB_MARKET,
     GET_SAMPLING_SIMPLIFIED_MARKETS,
     GET_SAMPLING_MARKETS,
     GET_MARKET_TRADES_EVENTS,
@@ -61,7 +62,9 @@ from .endpoints import (
     GET_SPREAD,
     GET_SPREADS,
     GET_BUILDER_TRADES,
+    GET_BUILDER_FEE_RATE,
     POST_HEARTBEAT,
+    VERSION,
 )
 from .clob_types import (
     ApiCreds,
@@ -82,6 +85,8 @@ from .clob_types import (
     BookParams,
     MarketOrderArgs,
     PostOrdersArgs,
+    FeeInfo,
+    BuilderFeeRate,
 )
 from .exceptions import PolyException
 from .http_helpers.helpers import (
@@ -103,6 +108,7 @@ from .constants import (
     L2_AUTH_UNAVAILABLE,
     END_CURSOR,
     BUILDER_AUTH_UNAVAILABLE,
+    BYTES32_ZERO,
 )
 from .utilities import (
     parse_raw_orderbook_summary,
@@ -110,6 +116,8 @@ from .utilities import (
     order_to_json,
     is_tick_size_smaller,
     price_valid,
+    builder_code_to_bytes32,
+    adjust_market_buy_amount_for_fees,
 )
 from .rfq import RfqClient
 from .site_config import GEOBLOCK_HOST, SITE_CONFIG
@@ -144,10 +152,14 @@ class ClobClient:
         self.signer = Signer(key, chain_id) if key else None
         self.creds = creds
         self.mode = self._get_client_mode()
+        if signature_type is not None and int(signature_type) != int(SignatureTypeV2.DEPOSIT_WALLET):
+            raise ValueError("Kuest order flow supports only Deposit Wallet signature type 3")
 
         if self.signer:
             self.builder = OrderBuilder(
-                self.signer, sig_type=signature_type, funder=funder
+                self.signer,
+                sig_type=signature_type or SignatureTypeV2.DEPOSIT_WALLET,
+                funder=funder,
             )
 
         self.builder_config = None
@@ -159,7 +171,9 @@ class ClobClient:
         self.__tick_size_timestamps = {}
         self.__tick_size_ttl = tick_size_ttl
         self.__neg_risk = {}
-        self.__fee_rates = {}
+        self.__fee_infos = {}
+        self.__builder_fee_rates = {}
+        self.__token_condition_map = {}
         self._geoblock_status = None
 
         # RFQ client
@@ -210,6 +224,16 @@ class ClobClient:
         Does not need authentication
         """
         return get("{}{}".format(self.host, TIME))
+
+    def get_version(self) -> int:
+        """
+        Returns the CLOB API version. Defaults to V2 when the response omits it.
+        """
+        try:
+            result = get("{}{}".format(self.host, VERSION))
+            return result.get("version", 2) if isinstance(result, dict) else 2
+        except Exception:
+            return 2
 
     def create_api_key(self, nonce: int = None) -> ApiCreds:
         """
@@ -414,6 +438,11 @@ class ClobClient:
         ):
             return self.__tick_sizes[token_id]
 
+        if token_id in self.__token_condition_map:
+            self.get_clob_market_info(self.__token_condition_map[token_id])
+            if token_id in self.__tick_sizes:
+                return self.__tick_sizes[token_id]
+
         result = get("{}{}?token_id={}".format(self.host, GET_TICK_SIZE, token_id))
         self.__tick_sizes[token_id] = str(result["minimum_tick_size"])
         self.__tick_size_timestamps[token_id] = time.monotonic()
@@ -444,20 +473,14 @@ class ClobClient:
         if token_id in self.__neg_risk:
             return self.__neg_risk[token_id]
 
+        if token_id in self.__token_condition_map:
+            self.get_clob_market_info(self.__token_condition_map[token_id])
+            return self.__neg_risk[token_id]
+
         result = get("{}{}?token_id={}".format(self.host, GET_NEG_RISK, token_id))
         self.__neg_risk[token_id] = result["neg_risk"]
 
         return result["neg_risk"]
-
-    def get_fee_rate_bps(self, token_id: str) -> int:
-        if token_id in self.__fee_rates:
-            return self.__fee_rates[token_id]
-
-        result = get("{}{}?token_id={}".format(self.host, GET_FEE_RATE, token_id))
-        fee_rate = result.get("base_fee") or 0
-        self.__fee_rates[token_id] = fee_rate
-
-        return fee_rate
 
     def __resolve_tick_size(
         self, token_id: str, tick_size: TickSize = None
@@ -474,22 +497,6 @@ class ClobClient:
         else:
             tick_size = min_tick_size
         return tick_size
-
-    def __resolve_fee_rate(self, token_id: str, user_fee_rate: int = None) -> int:
-        market_fee_rate_bps = self.get_fee_rate_bps(token_id)
-        # If both fee rate on the market and the user supplied fee rate are non-zero, validate that they match
-        # else return the market fee rate
-        if (
-            market_fee_rate_bps is not None
-            and market_fee_rate_bps > 0
-            and user_fee_rate is not None
-            and user_fee_rate > 0
-            and user_fee_rate != market_fee_rate_bps
-        ):
-            raise Exception(
-                f"invalid user provided fee rate: ({user_fee_rate}), fee rate for the market must be {market_fee_rate_bps}"
-            )
-        return market_fee_rate_bps
 
     def create_order(
         self, order_args: OrderArgs, options: Optional[PartialCreateOrderOptions] = None
@@ -516,17 +523,13 @@ class ClobClient:
                 + str(1 - float(tick_size))
             )
 
+        order_args.builder_code = builder_code_to_bytes32(order_args.builder_code)
+
         neg_risk = (
             options.neg_risk
             if options and options.neg_risk
             else self.get_neg_risk(order_args.token_id)
         )
-
-        # fee rate
-        fee_rate_bps = self.__resolve_fee_rate(
-            order_args.token_id, order_args.fee_rate_bps
-        )
-        order_args.fee_rate_bps = fee_rate_bps
 
         return self.builder.create_order(
             order_args,
@@ -571,17 +574,28 @@ class ClobClient:
                 + str(1 - float(tick_size))
             )
 
+        order_args.builder_code = builder_code_to_bytes32(order_args.builder_code)
+
+        if order_args.side == "BUY" and getattr(order_args, "user_usdc_balance", 0):
+            self.__ensure_market_info_cached(order_args.token_id)
+            self.__ensure_builder_fee_rate_cached(order_args.builder_code)
+            fee_info = self.__fee_infos.get(order_args.token_id, FeeInfo())
+            builder_fee = self.__builder_fee_rates.get(
+                order_args.builder_code, BuilderFeeRate()
+            )
+            order_args.amount = adjust_market_buy_amount_for_fees(
+                order_args.amount,
+                order_args.price,
+                order_args.user_usdc_balance,
+                fee_info.taker_rate_bps,
+                builder_fee.taker,
+            )
+
         neg_risk = (
             options.neg_risk
             if options and options.neg_risk
             else self.get_neg_risk(order_args.token_id)
         )
-
-        # fee rate
-        fee_rate_bps = self.__resolve_fee_rate(
-            order_args.token_id, order_args.fee_rate_bps
-        )
-        order_args.fee_rate_bps = fee_rate_bps
 
         return self.builder.create_market_order(
             order_args,
@@ -1066,6 +1080,54 @@ class ClobClient:
         """
         return get("{}{}{}".format(self.host, GET_MARKET, condition_id))
 
+    def get_clob_market_info(self, condition_id: str):
+        """
+        Get V2 CLOB market info and populate local fee/tick/neg-risk caches.
+        Supports both compact (`c/t/mts/nr/fd`) and expanded Kuest response shapes.
+        """
+        result = get("{}{}{}".format(self.host, GET_CLOB_MARKET, condition_id))
+        tokens = result.get("t") or result.get("tokens")
+        if not tokens:
+            raise PolyException(
+                f"failed to fetch market info for condition id {condition_id}"
+            )
+
+        min_tick_size = result.get("mts") or result.get("min_tick_size")
+        neg_risk = result.get("nr", result.get("neg_risk", False))
+        fd = result.get("fd") or {}
+        maker_rate_bps = int(
+            fd.get("maker_fee_rate_bps")
+            or fd.get("builder_maker_fee_rate_bps")
+            or 0
+        )
+        taker_rate_bps = int(
+            fd.get("taker_fee_rate_bps")
+            or fd.get("builder_taker_fee_rate_bps")
+            or 0
+        )
+
+        for token in tokens:
+            if not token:
+                continue
+            token_id = token.get("t") or token.get("token_id")
+            if not token_id:
+                continue
+            self.__token_condition_map[token_id] = (
+                result.get("c") or result.get("condition_id") or condition_id
+            )
+            if min_tick_size is not None:
+                self.__tick_sizes[token_id] = str(min_tick_size)
+                self.__tick_size_timestamps[token_id] = time.monotonic()
+            self.__neg_risk[token_id] = neg_risk
+            self.__fee_infos[token_id] = FeeInfo(
+                maker_rate_bps=maker_rate_bps,
+                taker_rate_bps=taker_rate_bps,
+                rate=float(fd.get("r") or 0),
+                exponent=float(fd.get("e") or 0),
+            )
+
+        return result
+
     def get_market_trades_events(self, condition_id):
         """
         Get the market's trades events by condition id
@@ -1095,6 +1157,14 @@ class ClobClient:
 
         return results
 
+    def get_builder_fee_rate(self, builder_code: str) -> BuilderFeeRate:
+        """
+        Get and cache the V2 builder fee rate for a builder wallet/code.
+        """
+        normalized_builder_code = builder_code_to_bytes32(builder_code)
+        self.__ensure_builder_fee_rate_cached(normalized_builder_code)
+        return self.__builder_fee_rates.get(normalized_builder_code, BuilderFeeRate())
+
     def calculate_market_price(
         self, token_id: str, side: str, amount: float, order_type: OrderType
     ) -> float:
@@ -1116,3 +1186,32 @@ class ClobClient:
             return self.builder.calculate_sell_market_price(
                 book.bids, amount, order_type
             )
+
+    def __ensure_builder_fee_rate_cached(self, builder_code: str):
+        normalized_builder_code = builder_code_to_bytes32(builder_code)
+        if normalized_builder_code == BYTES32_ZERO:
+            return
+        if normalized_builder_code in self.__builder_fee_rates:
+            return
+
+        result = get(
+            "{}{}{}".format(self.host, GET_BUILDER_FEE_RATE, normalized_builder_code)
+        )
+        self.__builder_fee_rates[normalized_builder_code] = BuilderFeeRate(
+            maker=int(result.get("builder_maker_fee_rate_bps") or 0),
+            taker=int(result.get("builder_taker_fee_rate_bps") or 0),
+        )
+
+    def __ensure_market_info_cached(self, token_id: str):
+        if token_id in self.__fee_infos:
+            return
+
+        condition_id = self.__token_condition_map.get(token_id)
+        if not condition_id:
+            book = self.get_order_book(token_id)
+            condition_id = book.market if book else None
+            if not condition_id:
+                raise PolyException(f"failed to resolve condition id for token {token_id}")
+            self.__token_condition_map[token_id] = condition_id
+
+        self.get_clob_market_info(condition_id)

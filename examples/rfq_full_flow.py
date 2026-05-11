@@ -3,8 +3,7 @@ RFQ Full Flow Example
 
 This script demonstrates the complete RFQ (Request for Quote) flow between two parties.
 For a single manual test, edit the REQUEST_PARAMS and QUOTE_PARAMS at the top.
-This example assumes two EOA wallets.
-For using different signature types, you need to set the funder address signature type when initializing the client.
+This example assumes two owners with deployed Deposit Wallet funders.
 
 Usage: python rfq_full_flow.py
 
@@ -18,10 +17,12 @@ TROUBLESHOOTING "invalid request" errors:
 
 ENV VARIABLES:
 REQUESTER_PK: Private key of the requester
+REQUESTER_DEPOSIT_WALLET: Deposit Wallet address of the requester
 REQUESTER_API_KEY: API key of the requester
 REQUESTER_SECRET: Secret of the requester
 REQUESTER_PASS_PHRASE: Passphrase of the requester
 QUOTER_PK: Private key of the quoter
+QUOTER_DEPOSIT_WALLET: Deposit Wallet address of the quoter
 QUOTER_API_KEY: API key of the quoter
 QUOTER_SECRET: Secret of the quoter
 QUOTER_PASS_PHRASE: Passphrase of the quoter
@@ -82,7 +83,14 @@ def main():
         api_secret=os.getenv("REQUESTER_SECRET"),
         api_passphrase=os.getenv("REQUESTER_PASS_PHRASE"),
     )
-    requester_client = ClobClient(host, key=requester_key, chain_id=chain_id, creds=requester_creds)
+    requester_client = ClobClient(
+        host,
+        key=requester_key,
+        chain_id=chain_id,
+        creds=requester_creds,
+        signature_type=3,
+        funder=os.getenv("REQUESTER_DEPOSIT_WALLET"),
+    )
 
     # Quoter (creates the quote and approves the order)
     quoter_key = os.getenv("QUOTER_PK")
@@ -91,7 +99,14 @@ def main():
         api_secret=os.getenv("QUOTER_SECRET"),
         api_passphrase=os.getenv("QUOTER_PASS_PHRASE"),
     )
-    quoter_client = ClobClient(host, key=quoter_key, chain_id=chain_id, creds=quoter_creds)
+    quoter_client = ClobClient(
+        host,
+        key=quoter_key,
+        chain_id=chain_id,
+        creds=quoter_creds,
+        signature_type=3,
+        funder=os.getenv("QUOTER_DEPOSIT_WALLET"),
+    )
 
     print("=" * 60)
     print("RFQ Full Flow")

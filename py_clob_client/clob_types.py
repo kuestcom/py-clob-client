@@ -2,11 +2,8 @@ from typing import Any
 from dataclasses import dataclass, asdict
 from json import dumps
 from typing import Literal, Optional
-from py_order_utils.model import (
-    SignedOrder,
-)
-
-from .constants import ZERO_ADDRESS
+from .constants import BYTES32_ZERO
+from .order_utils.model.order_data_v2 import SignedOrderV2 as SignedOrder
 
 
 class OrderType(enumerate):
@@ -64,24 +61,19 @@ class OrderArgs:
     Side of the order
     """
 
-    fee_rate_bps: int = 0
-    """
-    Fee rate, in basis points, charged to the order maker, charged on proceeds
-    """
-
-    nonce: int = 0
-    """
-    Nonce used for onchain cancellations
-    """
-
     expiration: int = 0
     """
-    Timestamp after which the order is expired.
+    Expiration timestamp kept offchain by the CLOB.
     """
 
-    taker: str = ZERO_ADDRESS
+    metadata: str = BYTES32_ZERO
     """
-    Address of the order taker. The zero address is used to indicate a public order
+    Metadata bytes32 included in the signed order.
+    """
+
+    builder_code: str = BYTES32_ZERO
+    """
+    Builder code bytes32 included in the signed order.
     """
 
 
@@ -108,22 +100,22 @@ class MarketOrderArgs:
     Price used to create the order
     """
 
-    fee_rate_bps: int = 0
-    """
-    Fee rate, in basis points, charged to the order maker, charged on proceeds
-    """
-
-    nonce: int = 0
-    """
-    Nonce used for onchain cancellations
-    """
-
-    taker: str = ZERO_ADDRESS
-    """
-    Address of the order taker. The zero address is used to indicate a public order
-    """
-
     order_type: OrderType = OrderType.FOK
+
+    user_usdc_balance: float = 0
+    """
+    User USDC balance, used to adjust BUY market orders for total taker fees.
+    """
+
+    metadata: str = BYTES32_ZERO
+    """
+    Metadata bytes32 included in the signed order.
+    """
+
+    builder_code: str = BYTES32_ZERO
+    """
+    Builder code bytes32 included in the signed order.
+    """
 
 
 @dataclass
@@ -193,7 +185,7 @@ class AssetType(enumerate):
 class BalanceAllowanceParams:
     asset_type: AssetType = None
     token_id: str = None
-    signature_type: int = -1
+    signature_type: int = 3
 
 
 @dataclass
@@ -226,6 +218,25 @@ class RoundConfig:
     price: float
     size: float
     amount: float
+
+
+@dataclass
+class FeeInfo:
+    maker_rate_bps: int = 0
+    taker_rate_bps: int = 0
+    rate: float = 0.0
+    exponent: float = 0.0
+
+
+@dataclass
+class BuilderFeeRate:
+    maker: int = 0
+    taker: int = 0
+
+
+@dataclass
+class BuilderTradeParams(TradeParams):
+    builder_code: str = BYTES32_ZERO
 
 
 @dataclass
