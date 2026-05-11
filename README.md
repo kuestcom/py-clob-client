@@ -42,8 +42,18 @@ client.set_api_creds(client.create_or_derive_api_creds())
 ## Place a Limit Order
 
 ```python
+from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import OrderArgs, OrderType
 from py_clob_client.order_builder.constants import BUY
+
+client = ClobClient(
+    "https://clob.kuest.com",
+    chain_id=80002,
+    key="<owner-private-key>",
+    signature_type=3,
+    funder="<deposit-wallet-address>",
+)
+client.set_api_creds(client.create_or_derive_api_creds())
 
 order = OrderArgs(token_id="<token-id>", price=0.42, size=5.0, side=BUY)
 signed = client.create_order(order)
@@ -54,8 +64,18 @@ print(response)
 ## Place a Market Order
 
 ```python
+from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import MarketOrderArgs, OrderType
 from py_clob_client.order_builder.constants import BUY
+
+client = ClobClient(
+    "https://clob.kuest.com",
+    chain_id=80002,
+    key="<owner-private-key>",
+    signature_type=3,
+    funder="<deposit-wallet-address>",
+)
+client.set_api_creds(client.create_or_derive_api_creds())
 
 order = MarketOrderArgs(token_id="<token-id>", amount=25.0, side=BUY, order_type=OrderType.FOK)
 signed = client.create_market_order(order)
@@ -66,7 +86,17 @@ print(response)
 ## Manage Orders
 
 ```python
+from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import OpenOrderParams
+
+client = ClobClient(
+    "https://clob.kuest.com",
+    chain_id=80002,
+    key="<owner-private-key>",
+    signature_type=3,
+    funder="<deposit-wallet-address>",
+)
+client.set_api_creds(client.create_or_derive_api_creds())
 
 open_orders = client.get_orders(OpenOrderParams())
 if open_orders:
