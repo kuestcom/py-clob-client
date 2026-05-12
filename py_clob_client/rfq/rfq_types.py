@@ -82,7 +82,7 @@ class CreateRfqRequestParams:
     """Amount being paid (in smallest units, as string)."""
 
     user_type: int
-    """Signature type (0=EOA, 1=FACTORY_PROXY_WALLET, 2=GNOSIS_SAFE_WALLET, 3=EIP_1271_WALLET)."""
+    """Signature type. Kuest supports only Deposit Wallet type 3."""
 
 
 @dataclass
@@ -306,7 +306,7 @@ class RfqRequest:
     """Address of the requester."""
 
     proxy_address: Optional[str] = None
-    """Proxy address if applicable."""
+    """Deposit Wallet address if returned by the API."""
 
     token: Optional[str] = None
     """Token ID being traded."""
@@ -361,7 +361,7 @@ class RfqQuote:
     """Address of the quoter."""
 
     proxy_address: Optional[str] = None
-    """Proxy address if applicable."""
+    """Deposit Wallet address if returned by the API."""
 
     complement: Optional[str] = None
     """Complement token ID."""

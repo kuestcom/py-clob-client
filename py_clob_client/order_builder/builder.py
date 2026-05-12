@@ -1,12 +1,4 @@
-from py_order_utils.builders import OrderBuilder as UtilsOrderBuilder
-from py_order_utils.signer import Signer as UtilsSigner
-from py_order_utils.model import (
-    EOA,
-    OrderData,
-    SignedOrder,
-    BUY as UtilsBuy,
-    SELL as UtilsSell,
-)
+import time
 
 from .helpers import (
     to_token_decimals,
@@ -18,6 +10,9 @@ from .helpers import (
 from .constants import BUY, SELL
 from ..config import get_contract_config
 from ..signer import Signer
+from ..utilities import builder_code_to_bytes32
+from ..order_utils import ExchangeOrderBuilderV2, SignatureTypeV2, Side
+from ..order_utils.model.order_data_v2 import OrderDataV2, SignedOrderV2
 from ..clob_types import (
     OrderArgs,
     CreateOrderOptions,
@@ -40,13 +35,11 @@ class OrderBuilder:
     def __init__(self, signer: Signer, sig_type=None, funder=None):
         self.signer = signer
 
-        # Signature type used sign orders, defaults to EOA type
-        self.sig_type = sig_type if sig_type is not None else EOA
+        self.sig_type = sig_type if sig_type is not None else SignatureTypeV2.DEPOSIT_WALLET
+        if int(self.sig_type) != int(SignatureTypeV2.DEPOSIT_WALLET):
+            raise ValueError("Kuest order flow supports only Deposit Wallet signature type 3")
 
-        # Address which holds funds to be used.
-        # Used for Kuest proxy wallets and other smart contract wallets
-        # Defaults to the address of the signer
-        self.funder = funder if funder is not None else self.signer.address()
+        self.funder = funder
 
     def get_order_amounts(
         self, side: str, size: float, price: float, round_config: RoundConfig
@@ -65,7 +58,7 @@ class OrderBuilder:
             maker_amount = to_token_decimals(raw_maker_amt)
             taker_amount = to_token_decimals(raw_taker_amt)
 
-            return UtilsBuy, maker_amount, taker_amount
+            return Side.BUY, maker_amount, taker_amount
         elif side == SELL:
             raw_maker_amt = round_down(size, round_config.size)
 
@@ -78,7 +71,7 @@ class OrderBuilder:
             maker_amount = to_token_decimals(raw_maker_amt)
             taker_amount = to_token_decimals(raw_taker_amt)
 
-            return UtilsSell, maker_amount, taker_amount
+            return Side.SELL, maker_amount, taker_amount
         else:
             raise ValueError(f"order_args.side must be '{BUY}' or '{SELL}'")
 
@@ -98,7 +91,7 @@ class OrderBuilder:
             maker_amount = to_token_decimals(raw_maker_amt)
             taker_amount = to_token_decimals(raw_taker_amt)
 
-            return UtilsBuy, maker_amount, taker_amount
+            return Side.BUY, maker_amount, taker_amount
 
         elif side == SELL:
             raw_maker_amt = round_down(amount, round_config.size)
@@ -112,16 +105,19 @@ class OrderBuilder:
             maker_amount = to_token_decimals(raw_maker_amt)
             taker_amount = to_token_decimals(raw_taker_amt)
 
-            return UtilsSell, maker_amount, taker_amount
+            return Side.SELL, maker_amount, taker_amount
         else:
             raise ValueError(f"order_args.side must be '{BUY}' or '{SELL}'")
 
     def create_order(
         self, order_args: OrderArgs, options: CreateOrderOptions
-    ) -> SignedOrder:
+    ) -> SignedOrderV2:
         """
         Creates and signs an order
         """
+        if not self.funder:
+            raise ValueError("Deposit Wallet funder address is required for Kuest orders")
+
         side, maker_amount, taker_amount = self.get_order_amounts(
             order_args.side,
             order_args.size,
@@ -129,17 +125,17 @@ class OrderBuilder:
             ROUNDING_CONFIG[options.tick_size],
         )
 
-        data = OrderData(
+        data = OrderDataV2(
             maker=self.funder,
-            taker=order_args.taker,
             tokenId=order_args.token_id,
             makerAmount=str(maker_amount),
             takerAmount=str(taker_amount),
             side=side,
-            feeRateBps=str(order_args.fee_rate_bps),
-            nonce=str(order_args.nonce),
-            signer=self.signer.address(),
+            signer=self.funder,
             expiration=str(order_args.expiration),
+            timestamp=str(time.time_ns() // 1_000_000),
+            metadata=order_args.metadata,
+            builder=builder_code_to_bytes32(order_args.builder_code),
             signatureType=self.sig_type,
         )
 
@@ -147,20 +143,23 @@ class OrderBuilder:
             self.signer.get_chain_id(), options.neg_risk
         )
 
-        order_builder = UtilsOrderBuilder(
+        order_builder = ExchangeOrderBuilderV2(
             contract_config.exchange,
             self.signer.get_chain_id(),
-            UtilsSigner(key=self.signer.private_key),
+            self.signer,
         )
 
         return order_builder.build_signed_order(data)
 
     def create_market_order(
         self, order_args: MarketOrderArgs, options: CreateOrderOptions
-    ) -> SignedOrder:
+    ) -> SignedOrderV2:
         """
         Creates and signs a market order
         """
+        if not self.funder:
+            raise ValueError("Deposit Wallet funder address is required for Kuest orders")
+
         side, maker_amount, taker_amount = self.get_market_order_amounts(
             order_args.side,
             order_args.amount,
@@ -168,17 +167,17 @@ class OrderBuilder:
             ROUNDING_CONFIG[options.tick_size],
         )
 
-        data = OrderData(
+        data = OrderDataV2(
             maker=self.funder,
-            taker=order_args.taker,
             tokenId=order_args.token_id,
             makerAmount=str(maker_amount),
             takerAmount=str(taker_amount),
             side=side,
-            feeRateBps=str(order_args.fee_rate_bps),
-            nonce=str(order_args.nonce),
-            signer=self.signer.address(),
+            signer=self.funder,
             expiration="0",
+            timestamp=str(time.time_ns() // 1_000_000),
+            metadata=order_args.metadata,
+            builder=builder_code_to_bytes32(order_args.builder_code),
             signatureType=self.sig_type,
         )
 
@@ -186,10 +185,10 @@ class OrderBuilder:
             self.signer.get_chain_id(), options.neg_risk
         )
 
-        order_builder = UtilsOrderBuilder(
+        order_builder = ExchangeOrderBuilderV2(
             contract_config.exchange,
             self.signer.get_chain_id(),
-            UtilsSigner(key=self.signer.private_key),
+            self.signer,
         )
 
         return order_builder.build_signed_order(data)

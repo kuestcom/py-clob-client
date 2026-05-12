@@ -1,7 +1,10 @@
 import hashlib
 import json
+from dataclasses import asdict
 
 from .clob_types import OrderBookSummary, OrderSummary, TickSize
+from .constants import BYTES32_ZERO
+from .order_utils import SignatureTypeV2, Side, SideString
 from .site_config import get_site_order_payload
 
 
@@ -60,8 +63,16 @@ def generate_orderbook_summary_hash(orderbook: OrderBookSummary) -> str:
 
 
 def order_to_json(order, owner, orderType, post_only: bool = False) -> dict:
+    if int(order.signatureType) != int(SignatureTypeV2.DEPOSIT_WALLET):
+        raise ValueError("Kuest order submission supports only Deposit Wallet signature type 3")
+
+    order_payload = asdict(order)
+    order_payload["salt"] = int(order.salt)
+    order_payload["side"] = SideString.BUY if order.side == Side.BUY else SideString.SELL
+    order_payload["signatureType"] = int(order.signatureType)
+
     return {
-        "order": order.dict(),
+        "order": order_payload,
         "owner": owner,
         "orderType": orderType,
         "postOnly": post_only,
@@ -75,3 +86,37 @@ def is_tick_size_smaller(a: TickSize, b: TickSize) -> bool:
 
 def price_valid(price: float, tick_size: TickSize) -> bool:
     return price >= float(tick_size) and price <= 1 - float(tick_size)
+
+
+def builder_code_to_bytes32(builder_code: str = None) -> str:
+    value = (builder_code or "").strip()
+    if not value or value == BYTES32_ZERO:
+        return BYTES32_ZERO
+
+    hex_value = value[2:] if value.startswith(("0x", "0X")) else value
+    if len(hex_value) == 40 and all(c in "0123456789abcdefABCDEF" for c in hex_value):
+        return "0x" + hex_value.rjust(64, "0").lower()
+    if len(hex_value) == 64 and all(c in "0123456789abcdefABCDEF" for c in hex_value):
+        return "0x" + hex_value.lower()
+
+    raise ValueError("builder_code must be an address or bytes32 hex string")
+
+
+def adjust_market_buy_amount_for_fees(
+    amount: float,
+    price: float,
+    user_usdc_balance: float,
+    kuest_taker_fee_rate_bps: int,
+    builder_taker_fee_rate_bps: int,
+) -> float:
+    total_fee_rate = (kuest_taker_fee_rate_bps + builder_taker_fee_rate_bps) / 10_000
+    total_cost = amount * (1 + total_fee_rate)
+    if user_usdc_balance >= total_cost:
+        return amount
+
+    adjusted = user_usdc_balance / (1 + total_fee_rate)
+    if adjusted <= 0:
+        raise ValueError(
+            f"user_usdc_balance {user_usdc_balance} too small to cover fees at price {price}"
+        )
+    return adjusted
