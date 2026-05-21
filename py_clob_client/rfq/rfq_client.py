@@ -49,7 +49,6 @@ from .rfq_helpers import (
     parse_rfq_quotes_params,
     COLLATERAL_TOKEN_DECIMALS,
 )
-from ..site_config import get_site_order_payload
 
 if TYPE_CHECKING:
     from ..client import ClobClient
@@ -544,7 +543,6 @@ class RfqClient:
             "requestId": params.request_id,
             "quoteId": params.quote_id,
             "owner": self._parent.creds.api_key,
-            **get_site_order_payload(),
             # Order fields from dict
             "salt": int(order_dict["salt"]),
             "maker": order_dict["maker"],
@@ -641,7 +639,6 @@ class RfqClient:
             "requestId": params.request_id,
             "quoteId": params.quote_id,
             "owner": self._parent.creds.api_key,
-            **get_site_order_payload(),
             # Order fields from dict
             "salt": int(order_dict["salt"]),
             "maker": order_dict["maker"],

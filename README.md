@@ -9,6 +9,8 @@
 
 Python SDK for the Kuest CLOB.
 
+This SDK uses V2 Deposit Wallet orders only. If this repo is downloaded through a fork's SDK download page, `py_clob_client/site_config.py` is preconfigured with that fork's builder code and every order created by the SDK includes it automatically.
+
 ## Installation
 
 ```bash
@@ -34,7 +36,7 @@ Kuest trading uses Deposit Wallet orders only. The public order path defaults to
 from py_clob_client.client import ClobClient
 
 HOST = "https://clob.kuest.com"
-CHAIN_ID = 80002
+CHAIN_ID = 137
 PRIVATE_KEY = "<owner-private-key>"
 DEPOSIT_WALLET = "<deposit-wallet-address>"
 
@@ -57,7 +59,7 @@ from py_clob_client.order_builder.constants import BUY
 
 client = ClobClient(
     "https://clob.kuest.com",
-    chain_id=80002,
+    chain_id=137,
     key="<owner-private-key>",
     signature_type=3,
     funder="<deposit-wallet-address>",
@@ -79,7 +81,7 @@ from py_clob_client.order_builder.constants import BUY
 
 client = ClobClient(
     "https://clob.kuest.com",
-    chain_id=80002,
+    chain_id=137,
     key="<owner-private-key>",
     signature_type=3,
     funder="<deposit-wallet-address>",
@@ -100,7 +102,7 @@ from py_clob_client.clob_types import OpenOrderParams
 
 client = ClobClient(
     "https://clob.kuest.com",
-    chain_id=80002,
+    chain_id=137,
     key="<owner-private-key>",
     signature_type=3,
     funder="<deposit-wallet-address>",

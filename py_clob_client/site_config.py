@@ -1,20 +1,22 @@
+ZERO_BYTES32 = "0x0000000000000000000000000000000000000000000000000000000000000000"
+
 SITE_CONFIG = {
     "site_url": "",
-    "fee_bps": 0,
-    "fee_receiver": "",
     "builder_mode": False,
     "geoblock": False,
+    "builder_code": "",
+    "order_metadata": ZERO_BYTES32,
 }
 
 GEOBLOCK_HOST = "https://geoblock.kuest.com"
 
 
-def get_site_order_payload() -> dict:
-    fee_receiver = SITE_CONFIG["fee_receiver"].strip()
-    if not fee_receiver:
-        return {}
-
-    return {
-        "fee_bps": SITE_CONFIG["fee_bps"],
-        "fee_receiver": fee_receiver,
-    }
+def get_site_order_context() -> dict:
+    context = {}
+    builder_code = SITE_CONFIG["builder_code"].strip()
+    if builder_code:
+        context["builder_code"] = builder_code
+    metadata = SITE_CONFIG["order_metadata"].strip()
+    if metadata and metadata != ZERO_BYTES32:
+        context["metadata"] = metadata
+    return context

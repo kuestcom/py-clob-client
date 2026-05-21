@@ -1,6 +1,7 @@
 import logging
 import json
 import time
+from dataclasses import replace
 from typing import Optional
 from urllib.parse import quote
 
@@ -120,7 +121,14 @@ from .utilities import (
     adjust_market_buy_amount_for_fees,
 )
 from .rfq import RfqClient
-from .site_config import GEOBLOCK_HOST, SITE_CONFIG
+from .site_config import GEOBLOCK_HOST, SITE_CONFIG, get_site_order_context
+
+
+def apply_site_order_context(order_args):
+    context = get_site_order_context()
+    if not context:
+        return order_args
+    return replace(order_args, **context)
 
 
 class ClobClient:
@@ -506,6 +514,7 @@ class ClobClient:
         Level 1 Auth required
         """
         self.assert_level_1_auth()
+        order_args = apply_site_order_context(order_args)
 
         # add resolve_order_options, or similar
         tick_size = self.__resolve_tick_size(
@@ -549,6 +558,7 @@ class ClobClient:
         Level 1 Auth required
         """
         self.assert_level_1_auth()
+        order_args = apply_site_order_context(order_args)
 
         # add resolve_order_options, or similar
         tick_size = self.__resolve_tick_size(
