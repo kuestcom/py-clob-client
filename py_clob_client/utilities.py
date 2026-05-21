@@ -5,7 +5,6 @@ from dataclasses import asdict
 from .clob_types import OrderBookSummary, OrderSummary, TickSize
 from .constants import BYTES32_ZERO
 from .order_utils import SignatureTypeV2, Side, SideString
-from .site_config import get_site_order_payload
 
 
 def parse_raw_orderbook_summary(raw_obs: any) -> OrderBookSummary:
@@ -76,7 +75,6 @@ def order_to_json(order, owner, orderType, post_only: bool = False) -> dict:
         "owner": owner,
         "orderType": orderType,
         "postOnly": post_only,
-        **get_site_order_payload(),
     }
 
 
