@@ -3,7 +3,7 @@ import os
 from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import ApiCreds, OrderArgs
 from dotenv import load_dotenv
-from py_clob_client.constants import POLYGON
+from py_clob_client.constants import AMOY
 
 from py_clob_client.order_builder.constants import BUY
 
@@ -20,7 +20,7 @@ def main():
         api_secret=os.getenv("CLOB_SECRET"),
         api_passphrase=os.getenv("CLOB_PASS_PHRASE"),
     )
-    chain_id = int(os.getenv("CHAIN_ID", POLYGON))
+    chain_id = int(os.getenv("CHAIN_ID", AMOY))
     client = ClobClient(host, key=key, chain_id=chain_id, creds=creds, funder=funder)
 
     # Create and sign a limit order buying 100 YES tokens for 0.0005 each
