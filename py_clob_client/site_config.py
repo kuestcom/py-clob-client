@@ -37,6 +37,8 @@ def _load_site_config() -> dict:
 
     try:
         parsed = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as error:
+        raise RuntimeError(f"Unable to read {path}: {error}") from error
     except json.JSONDecodeError as error:
         raise RuntimeError(f"Invalid {path}: {error}") from error
 
