@@ -1,0 +1,97 @@
+name: Bug report
+description: Report a reproducible bug in kuest-py-clob-client
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue with the Python SDK. Please include enough detail for maintainers to reproduce the behavior locally.
+  - type: input
+    id: package_version
+    attributes:
+      label: Package version
+      description: The kuest-py-clob-client version from setup.py, requirements.txt, or the installed wheel.
+      placeholder: "kuest-py-clob-client 2.0.3"
+    validations:
+      required: true
+  - type: textarea
+    id: python_version
+    attributes:
+      label: Python version and platform
+      description: Paste your Python version, OS, and package manager if relevant.
+      placeholder: |
+        Python 3.9.10
+        OS: macOS 15 / Ubuntu 24.04
+        pip 25.x
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Installed dependencies
+      description: Mention the SDK version and any relevant surrounding packages.
+      placeholder: |
+        kuest-py-clob-client 2.0.3
+        kuest-py-builder-signing-sdk 2.0.0
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Minimal reproduction
+      description: Provide the smallest code sample, command, or test case that reproduces the issue.
+      placeholder: |
+        1. Create a new virtualenv.
+        2. Install kuest-py-clob-client.
+        3. Run this snippet:
+
+        ```python
+        # code here
+        ```
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should the SDK have done?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or HTTP details
+      description: Include sanitized logs, stack traces, request IDs, or HTTP responses if relevant. Do not include secrets or private keys.
+      render: text
+    validations:
+      required: false
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Regression?
+      description: Did this work in an earlier SDK version?
+      options:
+        - Not sure
+        - "No"
+        - "Yes"
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have removed secrets, private keys, and API credentials from this report.
+          required: true
+        - label: I have checked the README and examples for the affected feature.
+          required: true
