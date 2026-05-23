@@ -6,6 +6,6 @@ kuest-py-eip712-structs==0.0.3
 kuest-py-order-utils==0.3.4
 pytest==8.4.2
 python-dotenv==1.2.1
-websockets==16.0
+websockets==15.0.1
 kuest-py-builder-signing-sdk==2.0.0
 httpx[http2]==0.28.1
