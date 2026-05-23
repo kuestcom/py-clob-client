@@ -20,7 +20,7 @@ setuptools.setup(
         "eth-utils>=5.3.1,<6.0.0",
         "kuest-py-eip712-structs==0.0.3",
         "kuest-py-order-utils==0.3.4",
-        "python-dotenv>=1.2.2",
+        "python-dotenv>=1.2.1",
         "kuest-py-builder-signing-sdk==2.0.0",
         "httpx[http2]>=0.28.1",
     ],
