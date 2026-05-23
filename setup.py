@@ -17,10 +17,10 @@ setuptools.setup(
     install_requires=[
         "eth-account>=0.13.7",
         "eth-abi>=5.2.0",
-        "eth-utils>=5.3.1,<6.0.0",
+        "eth-utils>=6.0.0",
         "kuest-py-eip712-structs==0.0.3",
         "kuest-py-order-utils==0.3.4",
-        "python-dotenv>=1.2.1",
+        "python-dotenv>=1.2.2",
         "kuest-py-builder-signing-sdk==2.0.0",
         "httpx[http2]>=0.28.1",
     ],
@@ -33,5 +33,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     packages=setuptools.find_packages(),
-    python_requires=">=3.9.10",
+    python_requires=">=3.10",
 )

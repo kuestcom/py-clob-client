@@ -1,11 +1,11 @@
-black==25.11.0
+black==26.5.1
 eth-account==0.13.7
 eth-abi==5.2.0
-eth-utils==5.3.1
+eth-utils==6.0.0
 kuest-py-eip712-structs==0.0.3
 kuest-py-order-utils==0.3.4
-pytest==8.4.2
-python-dotenv==1.2.1
-websockets==15.0.1
+pytest==9.0.3
+python-dotenv==1.2.2
+websockets==16.0
 kuest-py-builder-signing-sdk==2.0.0
 httpx[http2]==0.28.1
