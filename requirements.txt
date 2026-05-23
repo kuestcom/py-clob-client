@@ -1,7 +1,7 @@
 black==25.11.0
 eth-account==0.13.7
 eth-abi==5.2.0
-eth-utils==6.0.0
+eth-utils==5.3.1
 kuest-py-eip712-structs==0.0.3
 kuest-py-order-utils==0.3.4
 pytest==9.0.3
