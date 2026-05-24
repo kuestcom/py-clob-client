@@ -9,7 +9,6 @@ from typing import Optional, Dict, Any
 
 from .rfq_types import GetRfqRequestsParams, GetRfqQuotesParams
 
-
 # Token decimals constants
 COLLATERAL_TOKEN_DECIMALS = 6  # USDC has 6 decimals
 CONDITIONAL_TOKEN_DECIMALS = 6

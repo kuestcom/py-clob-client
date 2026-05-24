@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from py_clob_client.constants import AMOY
 from py_clob_client.order_builder.constants import SELL
 
-
 load_dotenv()
 
 

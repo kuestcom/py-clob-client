@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 from py_clob_client.constants import AMOY
 
-
 load_dotenv()
 
 
@@ -31,8 +30,6 @@ def main():
         time.sleep(5)
     # Example output on invalid heartbeat ID once heartbeats started:
     # PolyApiException[status_code=400, error_message={"error":"Invalid Heartbeat ID","heartbeat_id":"7f335bb3-36cb-433d-b8ff-4f9a2233d833"}
-
-
 
 
 main()

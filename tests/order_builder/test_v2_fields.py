@@ -16,7 +16,9 @@ class TestV2OrderFields(TestCase):
         )
         deposit_wallet = "0x1111111111111111111111111111111111111111"
         builder = OrderBuilder(signer, funder=deposit_wallet)
-        builder_code = "0x0000000000000000000000001111111111111111111111111111111111111111"
+        builder_code = (
+            "0x0000000000000000000000001111111111111111111111111111111111111111"
+        )
         metadata = "0x0000000000000000000000000000000000000000000000000000000000000042"
 
         order = builder.create_order(
@@ -31,7 +33,9 @@ class TestV2OrderFields(TestCase):
             options=CreateOrderOptions(tick_size="0.1", neg_risk=False),
         )
 
-        payload = order_to_json(order=order, owner="owner-api-key", orderType=OrderType.GTC)
+        payload = order_to_json(
+            order=order, owner="owner-api-key", orderType=OrderType.GTC
+        )
         order_payload = payload["order"]
 
         self.assertEqual(order_payload["builder"], builder_code)

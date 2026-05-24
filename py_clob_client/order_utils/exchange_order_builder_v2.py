@@ -22,7 +22,6 @@ from .model.ctf_exchange_v2_typed_data import (
 )
 from .utils import generate_order_salt
 
-
 ORDER_TYPE_STRING = (
     "Order(uint256 salt,address maker,address signer,uint256 tokenId,"
     "uint256 makerAmount,uint256 takerAmount,uint8 side,uint8 signatureType,"
@@ -98,9 +97,13 @@ class ExchangeOrderBuilderV2:
         )
 
         if signature_type != SignatureTypeV2.DEPOSIT_WALLET:
-            raise ValueError("Kuest order signing supports only Deposit Wallet signature type 3")
+            raise ValueError(
+                "Kuest order signing supports only Deposit Wallet signature type 3"
+            )
         if signer_addr != order_data.maker:
-            raise ValueError("Deposit Wallet orders must use the Deposit Wallet as maker and signer")
+            raise ValueError(
+                "Deposit Wallet orders must use the Deposit Wallet as maker and signer"
+            )
 
         return OrderV2(
             salt=self.generate_salt(),
@@ -150,8 +153,12 @@ class ExchangeOrderBuilderV2:
         }
 
     def build_order_signature(self, typed_data: dict) -> str:
-        if typed_data["message"]["signatureType"] != int(SignatureTypeV2.DEPOSIT_WALLET):
-            raise ValueError("Kuest order signing supports only Deposit Wallet signature type 3")
+        if typed_data["message"]["signatureType"] != int(
+            SignatureTypeV2.DEPOSIT_WALLET
+        ):
+            raise ValueError(
+                "Kuest order signing supports only Deposit Wallet signature type 3"
+            )
 
         return self._build_deposit_wallet_order_signature(typed_data)
 

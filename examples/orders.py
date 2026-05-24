@@ -7,7 +7,6 @@ from py_clob_client.constants import AMOY
 
 from py_clob_client.order_builder.constants import BUY, SELL
 
-
 load_dotenv()
 
 
@@ -48,7 +47,7 @@ def main():
                     )
                 ),
                 orderType=OrderType.GTC,  # Good 'Til Cancelled
-                postOnly=False, # Defaults to false, can be set to true to avoid matching on post
+                postOnly=False,  # Defaults to false, can be set to true to avoid matching on post
             ),
         ]
     )

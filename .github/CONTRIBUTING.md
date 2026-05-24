@@ -1,28 +1,50 @@
-## py-clob-client Contribution Guide
+# Contribution Guide
 
-All contributions to the py-clob-client are welcome and greatly appreciated! This document serves to outline the process for contributions and help you get set up.
+Contributions to `kuest-py-clob-client` are welcome. This document outlines the basic workflow for local development and pull requests.
 
-### Steps to get started
+## Getting Started
 
-1. Fork 'kuestcom/py-clob-client'
-2. Clone your fork
-3. Follow the [installation instructions](./README.md) in the top level README.
-4. Open pull requests with the `[WIP]` flag against the `main` branch and include a description of the intended change in the PR description.
+1. Fork `kuestcom/py-clob-client`.
+2. Clone your fork.
+3. Use Python 3.10 or newer. CI currently runs on Python 3.10.
+4. Create and activate a virtual environment, then install dependencies:
 
-Before removing the `[WIP]` tag and submitting a PR for review, make sure that:
+```sh
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -e .
+```
 
-- it passes our linter checks
-- the test suite passes for all packages
-- it passes our continuous integration tests
-- your fork is up to date with `main`
+Open pull requests against the `main` branch and fill out the PR template.
 
-### Branch structure & naming
+## Local Checks
 
-Our main branch, `main`, represents the current development state of the codebase. All pull requests should be opened against `main`.
+Before submitting a PR for review, run the same checks used by CI:
 
-Name your branch with the format `{fix | feat | refactor | chore }/{ description }`
+```sh
+python -m black --check .
+python -m pytest -s
+python -m pip install build
+python -m build --sdist --wheel
+```
 
-- A `fix` addresses a bug or other issue
-- A `feat` adds new functionality/interface surface area
-- A `refactor` changes no business logic or interfaces, but improves implementation
-- A `chore` addresses minor improvements or configuration changes
+You can format the codebase with:
+
+```sh
+python -m black .
+```
+
+## Branch Structure & Naming
+
+The `main` branch represents the current development state of the codebase. All pull requests should target `main`.
+
+Use clear branch names and follow the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) style for PR titles and commit subjects, such as `fix:`, `feat:`, `docs:`, `test:`, `refactor:`, and `chore:`.
+
+## Change Guidelines
+
+- Keep PRs focused on one feature, bugfix, or maintenance change.
+- Add or update tests for behavior changes whenever feasible.
+- Update `README.md`, examples, and Python packaging metadata when public SDK behavior changes.
+- Commit `requirements.txt` changes when dependencies change.
+- Do not include secrets, private keys, or real API credentials in examples, tests, logs, or PR descriptions.
+- Review your own diff before requesting review.

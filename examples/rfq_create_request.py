@@ -29,7 +29,9 @@ def main():
         size=40.0,
     )
 
-    resp = client.rfq.create_rfq_request(user_request, options=PartialCreateOrderOptions(tick_size=0.01))
+    resp = client.rfq.create_rfq_request(
+        user_request, options=PartialCreateOrderOptions(tick_size=0.01)
+    )
     print(resp)
     print("Done!")
 

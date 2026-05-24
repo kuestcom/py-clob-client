@@ -3,11 +3,9 @@
   Kuest Python CLOB Client
 </h1>
 
-<a href='https://pypi.org/project/kuest-py-clob-client'>
-    <img src='https://img.shields.io/pypi/v/kuest-py-clob-client.svg' alt='PyPI'/>
-</a>
+[![PyPI](https://img.shields.io/pypi/v/kuest-py-clob-client.svg)](https://pypi.org/project/kuest-py-clob-client)
+[![PR](https://github.com/kuestcom/py-clob-client/actions/workflows/pr.yml/badge.svg)](https://github.com/kuestcom/py-clob-client/actions/workflows/pr.yml)
 
-Python SDK for the Kuest CLOB.
 
 ## Installation
 
@@ -113,9 +111,3 @@ if open_orders:
 
 client.cancel_all()
 ```
-
-## Notes
-
-- Use `KUEST_API_KEY`, `KUEST_SECRET`, and `KUEST_PASSPHRASE` credentials for authenticated Level 2 calls.
-- `API_KEY`, `API_SECRET`, `API_PASSPHRASE`, and `PRIVATE_KEY` may be used as local input aliases by applications, but SDK wire headers remain `KUEST_*`.
-- USDC remains the settlement collateral.
