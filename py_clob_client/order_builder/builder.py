@@ -35,9 +35,13 @@ class OrderBuilder:
     def __init__(self, signer: Signer, sig_type=None, funder=None):
         self.signer = signer
 
-        self.sig_type = sig_type if sig_type is not None else SignatureTypeV2.DEPOSIT_WALLET
+        self.sig_type = (
+            sig_type if sig_type is not None else SignatureTypeV2.DEPOSIT_WALLET
+        )
         if int(self.sig_type) != int(SignatureTypeV2.DEPOSIT_WALLET):
-            raise ValueError("Kuest order flow supports only Deposit Wallet signature type 3")
+            raise ValueError(
+                "Kuest order flow supports only Deposit Wallet signature type 3"
+            )
 
         self.funder = funder
 
@@ -116,7 +120,9 @@ class OrderBuilder:
         Creates and signs an order
         """
         if not self.funder:
-            raise ValueError("Deposit Wallet funder address is required for Kuest orders")
+            raise ValueError(
+                "Deposit Wallet funder address is required for Kuest orders"
+            )
 
         side, maker_amount, taker_amount = self.get_order_amounts(
             order_args.side,
@@ -158,7 +164,9 @@ class OrderBuilder:
         Creates and signs a market order
         """
         if not self.funder:
-            raise ValueError("Deposit Wallet funder address is required for Kuest orders")
+            raise ValueError(
+                "Deposit Wallet funder address is required for Kuest orders"
+            )
 
         side, maker_amount, taker_amount = self.get_market_order_amounts(
             order_args.side,

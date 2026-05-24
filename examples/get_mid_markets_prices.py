@@ -5,7 +5,6 @@ from py_clob_client.clob_types import ApiCreds, BookParams
 from dotenv import load_dotenv
 from py_clob_client.constants import AMOY
 
-
 load_dotenv()
 
 

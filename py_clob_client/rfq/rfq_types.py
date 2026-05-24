@@ -8,7 +8,6 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Any, Literal
 from enum import Enum
 
-
 # =============================================================================
 # Input Types
 # =============================================================================

@@ -4,15 +4,16 @@ from py_clob_client.rfq.rfq_client import RfqClient
 from py_clob_client.rfq.rfq_types import MatchType
 from py_clob_client.order_builder.constants import BUY, SELL
 
+
 class TestCreateAcceptQuotePayload(TestCase):
-    
+
     def test_complementary(self):
         client = RfqClient(parent=None)
         quote = {
             "matchType": "COMPLEMENTARY",
             "side": BUY,
             "token": "tokenA",
-            "sizeIn": "100", 
+            "sizeIn": "100",
             "sizeOut": "50",
             "price": "0.5",
         }
@@ -29,7 +30,7 @@ class TestCreateAcceptQuotePayload(TestCase):
             "token": "tokenB",
             "sizeIn": "200",
             "sizeOut": "75",
-            "price": "0.60"
+            "price": "0.60",
         }
 
         payload = client._get_request_order_creation_payload(quote)
@@ -37,7 +38,6 @@ class TestCreateAcceptQuotePayload(TestCase):
         self.assertEqual(payload["side"], BUY)
         self.assertEqual(payload["size"], "75")
         self.assertEqual(payload["price"], 0.60)
-
 
     def test_mint_merge(self):
         client = RfqClient(parent=None)
@@ -60,7 +60,7 @@ class TestCreateAcceptQuotePayload(TestCase):
             "matchType": "MINT",
             "side": BUY,
             "complement": "tokenC",
-            "sizeIn": "30",    # tokens bought
+            "sizeIn": "30",  # tokens bought
             "sizeOut": "15",
             "price": "0.40",
         }

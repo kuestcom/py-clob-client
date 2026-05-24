@@ -63,11 +63,15 @@ def generate_orderbook_summary_hash(orderbook: OrderBookSummary) -> str:
 
 def order_to_json(order, owner, orderType, post_only: bool = False) -> dict:
     if int(order.signatureType) != int(SignatureTypeV2.DEPOSIT_WALLET):
-        raise ValueError("Kuest order submission supports only Deposit Wallet signature type 3")
+        raise ValueError(
+            "Kuest order submission supports only Deposit Wallet signature type 3"
+        )
 
     order_payload = asdict(order)
     order_payload["salt"] = int(order.salt)
-    order_payload["side"] = SideString.BUY if order.side == Side.BUY else SideString.SELL
+    order_payload["side"] = (
+        SideString.BUY if order.side == Side.BUY else SideString.SELL
+    )
     order_payload["signatureType"] = int(order.signatureType)
 
     return {

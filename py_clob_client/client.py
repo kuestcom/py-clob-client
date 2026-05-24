@@ -160,8 +160,12 @@ class ClobClient:
         self.signer = Signer(key, chain_id) if key else None
         self.creds = creds
         self.mode = self._get_client_mode()
-        if signature_type is not None and int(signature_type) != int(SignatureTypeV2.DEPOSIT_WALLET):
-            raise ValueError("Kuest order flow supports only Deposit Wallet signature type 3")
+        if signature_type is not None and int(signature_type) != int(
+            SignatureTypeV2.DEPOSIT_WALLET
+        ):
+            raise ValueError(
+                "Kuest order flow supports only Deposit Wallet signature type 3"
+            )
 
         if self.signer:
             self.builder = OrderBuilder(
@@ -947,7 +951,9 @@ class ClobClient:
         if self._geoblock_status is None:
             site_url = SITE_CONFIG["site_url"].strip()
             if not site_url:
-                raise PolyException("site_url must be configured when geoblock is enabled")
+                raise PolyException(
+                    "site_url must be configured when geoblock is enabled"
+                )
 
             self._geoblock_status = get(
                 "{}/?url={}".format(GEOBLOCK_HOST, quote(site_url, safe=""))
@@ -1106,14 +1112,10 @@ class ClobClient:
         neg_risk = result.get("nr", result.get("neg_risk", False))
         fd = result.get("fd") or {}
         maker_rate_bps = int(
-            fd.get("maker_fee_rate_bps")
-            or fd.get("builder_maker_fee_rate_bps")
-            or 0
+            fd.get("maker_fee_rate_bps") or fd.get("builder_maker_fee_rate_bps") or 0
         )
         taker_rate_bps = int(
-            fd.get("taker_fee_rate_bps")
-            or fd.get("builder_taker_fee_rate_bps")
-            or 0
+            fd.get("taker_fee_rate_bps") or fd.get("builder_taker_fee_rate_bps") or 0
         )
 
         for token in tokens:
@@ -1221,7 +1223,9 @@ class ClobClient:
             book = self.get_order_book(token_id)
             condition_id = book.market if book else None
             if not condition_id:
-                raise PolyException(f"failed to resolve condition id for token {token_id}")
+                raise PolyException(
+                    f"failed to resolve condition id for token {token_id}"
+                )
             self.__token_condition_map[token_id] = condition_id
 
         self.get_clob_market_info(condition_id)

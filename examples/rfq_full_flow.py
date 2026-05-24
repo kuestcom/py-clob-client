@@ -37,7 +37,12 @@ from dotenv import load_dotenv
 
 from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import ApiCreds
-from py_clob_client.rfq import RfqUserRequest, RfqUserQuote, AcceptQuoteParams, ApproveOrderParams
+from py_clob_client.rfq import (
+    RfqUserRequest,
+    RfqUserQuote,
+    AcceptQuoteParams,
+    ApproveOrderParams,
+)
 from py_clob_client.order_builder.constants import BUY, SELL
 from py_clob_client.constants import AMOY
 
@@ -46,13 +51,15 @@ load_dotenv()
 # ============================================
 # RFQ REQUEST PARAMETERS (REQUESTER) - EDIT THESE
 # ============================================
-TOKEN_ID = "34097058504275310827233323421517291090691602969494795225921954353603704046623"
+TOKEN_ID = (
+    "34097058504275310827233323421517291090691602969494795225921954353603704046623"
+)
 
 USER_REQUEST = RfqUserRequest(
     token_id=TOKEN_ID,
-    price=0.50,       # Price per token (e.g., 0.50 = 50 cents)
-    side=BUY,         # BUY or SELL
-    size=100.0,       # Number of tokens
+    price=0.50,  # Price per token (e.g., 0.50 = 50 cents)
+    side=BUY,  # BUY or SELL
+    size=100.0,  # Number of tokens
 )
 
 # ============================================
@@ -61,7 +68,7 @@ USER_REQUEST = RfqUserRequest(
 QUOTE_TOKEN_ID = TOKEN_ID  # Token ID for the quote (defaults to same as request)
 QUOTE_PRICE = 0.50  # Quoted price per token
 QUOTE_SIZE = 100.0  # Number of tokens to quote
-QUOTE_SIDE = SELL   # BUY or SELL
+QUOTE_SIDE = SELL  # BUY or SELL
 
 # ============================================
 # EXPIRATION CONFIGURATION
@@ -114,7 +121,7 @@ def main():
     print(f"Host: {host}")
     print(f"Chain ID: {chain_id}")
     print("=" * 60)
-    
+
     # ============================================
     # Step 1: Requester creates RFQ request
     # ============================================
@@ -139,7 +146,7 @@ def main():
     print("Request created successfully!")
     print(f"  Request ID: {request_id}")
     print(f"  Full response: {rfq_request_response}")
-    
+
     # ============================================
     # Step 2: Quoter creates quote for the request
     # ============================================
@@ -173,7 +180,7 @@ def main():
     print(f"  Quote ID: {quote_id}")
     print(f"  Request ID: {request_id}")
     print(f"  Full response: {rfq_quote_response}")
-    
+
     # ============================================
     # Step 3: Requester accepts the quote
     # ============================================
@@ -192,7 +199,7 @@ def main():
     print("Quote accepted successfully!")
     print(f"  Request ID: {request_id}")
     print(f"  Quote ID: {quote_id}")
-    
+
     # ============================================
     # Step 4: Quoter approves the order
     # ============================================
@@ -209,7 +216,7 @@ def main():
     print("Order approved successfully!")
     print(f"  Request ID: {request_id}")
     print(f"  Quote ID: {quote_id}")
-    
+
     # ============================================
     # Summary
     # ============================================

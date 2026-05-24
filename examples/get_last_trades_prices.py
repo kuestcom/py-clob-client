@@ -7,7 +7,6 @@ from pprint import pprint
 
 from py_clob_client.constants import AMOY
 
-
 load_dotenv()
 
 
