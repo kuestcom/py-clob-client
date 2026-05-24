@@ -1,38 +1,39 @@
-<!-- Delete any sub-sections not used rather than leaving them empty. -->
+## Pull Request Rules
 
-## Overview
+Please make sure your PR follows these rules:
 
-<!-- Provide a brief (1-3 sentence) summary of the PR and it's purpose. May include plans if a [WIP]. -->
+- One PR should address one feature, bugfix, or maintenance change.
+- Keep PRs small, focused, and easy to review.
+- Use commit prefixes such as `fix:`, `feat:`, `refactor:`, `docs:`, `test:`, and `chore:`.
+- Use English for branch names and commit subjects.
+- Review your own diff before opening the PR.
+- Rebase on the latest `main` before pushing.
+- If dependencies changed, include the updated `requirements.txt`.
+- If public SDK APIs changed, update Python types, README snippets, examples, or tests when relevant.
+- If signing, authentication, RFQ, order building, order utilities, headers, or HTTP behavior changed, include focused regression coverage whenever feasible.
+- Avoid unrelated refactors, drive-by fixes, or config/policy changes in the same PR.
+- Avoid commented-out code and unnecessary inline comments. Keep comments only when they explain non-obvious constraints or decisions.
+- If you use AI/LLM tools, use the highest reasoning mode available and full repository context/access when safe, then manually review and test the final diff before submitting.
+- Bugfix PRs should include a regression test whenever feasible.
+- PR descriptions should clearly state scope, reason for the change, testing performed, and any relevant risks.
 
-## Description
+## Summary
 
-<!-- Describe in detail what changes you plan to make in this section and sub-sections. -->
+Describe what changed and why. Mention affected SDK areas such as CLOB client methods, RFQ, order building, order utilities, authentication/signing, headers, HTTP helpers, examples, or package/config files.
 
-## Testing instructions
+## Testing
 
-<!-- If the PR changes how tests should be run, describe here. -->
+Describe how this was tested. Include the commands you ran and any examples or integration flows you exercised.
 
-## Types of changes
+## Risks
 
-<!-- Check one of the boxes below, and add additional information as necessary. -->
+Describe any relevant risks, tradeoffs, compatibility concerns, or follow-up work.
 
-- [ ] Refactor/enhancement <!-- Non-breaking (patch bump). -->
-- [ ] Bug fix/behavior correction <!-- Non-breaking (patch bump). -->
-- [ ] New feature <!-- Non-breaking (minor bump), unless also specified as breaking. -->
-- [ ] Breaking change <!-- Feature or bug fix that changes behavior and requires a major version bump. -->
-- [ ] Other, additional <!-- Describe below/above. -->
+## Checklist
 
-## Notes
-
-<!-- Include any additional comments, links, questions, or discussion items here. -->
-
-## Status
-
-<!-- Check any boxes that are already complete upon creation of the PR, and update whenever necessary. -->
-<!-- Make sure to check the "Ready for review" box when you are signing off on your changes for merge! -->
-
-- [ ] Prefix PR title with `[WIP]` if necessary (changes not yet made).
-- [ ] Add tests to cover changes as needed.
-- [ ] Update documentation/changelog as needed.
-- [ ] Verify all tests run correctly in CI and pass.
-- [ ] Ready for review/merge.
+- [ ] I ran `python -m pip install -r requirements.txt`, or dependency changes were intentional and `requirements.txt` is updated.
+- [ ] I ran `python -m black --check .`.
+- [ ] I ran `python -m pytest -s`.
+- [ ] I ran `python -m build --sdist --wheel`.
+- [ ] I updated docs, examples, and/or tests for user-facing behavior changes, or this PR does not need them.
+- [ ] I confirmed no secrets, private keys, or real API credentials were added.

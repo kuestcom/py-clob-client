@@ -22,7 +22,7 @@ body:
       label: Python version and platform
       description: Paste your Python version, OS, and package manager if relevant.
       placeholder: |
-        Python 3.9.10
+        Python 3.10.13
         OS: macOS 15 / Ubuntu 24.04
         pip 25.x
       render: text
