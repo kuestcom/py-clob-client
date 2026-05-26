@@ -58,6 +58,16 @@ class TestHMAC(TestCase):
         )
         self.assertNotEqual(sig_path, self.baseline_signature)
 
+    def test_query_parameters_are_excluded_from_signature(self):
+        sig_with_query = build_hmac_signature(
+            self.secret,
+            self.timestamp,
+            self.method,
+            f"{self.path}?market=condition",
+            self.string_body,
+        )
+        self.assertEqual(sig_with_query, self.baseline_signature)
+
     def test_extra_key_and_ordering_affect_signature(self):
         sig_order1 = build_hmac_signature(
             self.secret,
