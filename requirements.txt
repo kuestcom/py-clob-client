@@ -7,5 +7,5 @@ kuest-py-order-utils==0.3.6
 pytest==9.0.3
 python-dotenv==1.2.2
 websockets==16.0
-kuest-py-builder-signing-sdk==2.0.1
+kuest-py-builder-signing-sdk==2.0.2
 httpx[http2]==0.28.1
