@@ -122,6 +122,11 @@ from .utilities import (
 )
 from .rfq import RfqClient
 from .site_config import GEOBLOCK_HOST, SITE_CONFIG, get_site_order_context
+from .site_scope import (
+    filter_site_scoped_markets,
+    get_site_market_scope,
+    has_configured_site_scope,
+)
 
 
 def apply_site_order_context(order_args):
@@ -1062,33 +1067,27 @@ class ClobClient:
         """
         Get the current sampling markets
         """
-        return get(
-            "{}{}?next_cursor={}".format(self.host, GET_SAMPLING_MARKETS, next_cursor)
-        )
+        return self.__get_site_scoped_market_page(GET_SAMPLING_MARKETS, next_cursor)
 
     def get_sampling_simplified_markets(self, next_cursor="MA=="):
         """
         Get the current sampling simplified markets
         """
-        return get(
-            "{}{}?next_cursor={}".format(
-                self.host, GET_SAMPLING_SIMPLIFIED_MARKETS, next_cursor
-            )
+        return self.__get_site_scoped_market_page(
+            GET_SAMPLING_SIMPLIFIED_MARKETS, next_cursor
         )
 
     def get_markets(self, next_cursor="MA=="):
         """
         Get the current markets
         """
-        return get("{}{}?next_cursor={}".format(self.host, GET_MARKETS, next_cursor))
+        return self.__get_site_scoped_market_page(GET_MARKETS, next_cursor)
 
     def get_simplified_markets(self, next_cursor="MA=="):
         """
         Get the current simplified markets
         """
-        return get(
-            "{}{}?next_cursor={}".format(self.host, GET_SIMPLIFIED_MARKETS, next_cursor)
-        )
+        return self.__get_site_scoped_market_page(GET_SIMPLIFIED_MARKETS, next_cursor)
 
     def get_market(self, condition_id):
         """
@@ -1229,3 +1228,27 @@ class ClobClient:
             self.__token_condition_map[token_id] = condition_id
 
         self.get_clob_market_info(condition_id)
+
+    def __get_site_scoped_market_page(self, endpoint: str, next_cursor="MA=="):
+        if not has_configured_site_scope():
+            return get("{}{}?next_cursor={}".format(self.host, endpoint, next_cursor))
+
+        cursor = next_cursor
+        while True:
+            response = get("{}{}?next_cursor={}".format(self.host, endpoint, cursor))
+            data = response.get("data") if isinstance(response, dict) else []
+            data = data if isinstance(data, list) else []
+            scope = get_site_market_scope()
+            filtered = filter_site_scoped_markets(data, scope)
+            scoped_response = dict(response) if isinstance(response, dict) else {}
+            scoped_response["data"] = filtered
+            response_cursor = (
+                response.get("next_cursor", END_CURSOR)
+                if isinstance(response, dict)
+                else END_CURSOR
+            )
+
+            if filtered or response_cursor == END_CURSOR or response_cursor == cursor:
+                return scoped_response
+
+            cursor = response_cursor
