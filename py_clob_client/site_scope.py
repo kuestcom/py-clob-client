@@ -49,7 +49,9 @@ def normalize_token_id(value) -> str | None:
 def _normalize_site_origin() -> str:
     raw = SITE_CONFIG["site_url"].strip()
     if not raw:
-        raise RuntimeError("site_url must be configured for site-scoped market discovery")
+        raise RuntimeError(
+            "site_url must be configured for site-scoped market discovery"
+        )
 
     candidate = raw if raw.startswith(("http://", "https://")) else f"https://{raw}"
     parsed = urlparse(candidate)
@@ -77,6 +79,19 @@ def _add_token_id(scope: SiteMarketScope, value) -> None:
         scope.token_ids.add(token_id)
 
 
+def _collect_token_scope(value, scope: SiteMarketScope) -> None:
+    if isinstance(value, list):
+        for item in value:
+            _collect_token_scope(item, scope)
+        return
+
+    if isinstance(value, dict):
+        _collect_market_scope(value, scope)
+        return
+
+    _add_token_id(scope, value)
+
+
 def _collect_market_scope(value, scope: SiteMarketScope) -> None:
     if isinstance(value, list):
         for item in value:
@@ -101,12 +116,16 @@ def _collect_market_scope(value, scope: SiteMarketScope) -> None:
         "markets",
         "outcomes",
         "tokens",
+    ):
+        _collect_market_scope(value.get(key), scope)
+
+    for key in (
         "clob_token_ids",
         "clobTokenIds",
         "outcome_assets",
         "outcomeAssets",
     ):
-        _collect_market_scope(value.get(key), scope)
+        _collect_token_scope(value.get(key), scope)
 
 
 def get_site_market_scope() -> SiteMarketScope:
